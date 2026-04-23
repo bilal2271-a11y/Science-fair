@@ -9,6 +9,4 @@ dist-ssr
 .vercel
 .netlify
 .vite
-.env
-.env.local
-.env.*.local
+
