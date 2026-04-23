@@ -3,36 +3,147 @@ import {
   Plus, Trash2, Trophy, Zap, Users, Sparkles, X, Check, Flame, TrendingUp,
   Monitor, Settings, RotateCcw, Crown, Award, Medal, QrCode, ArrowLeft,
   ChevronRight, Beaker, Atom, Microscope, Vote, Activity, Radio, Download,
-  AlertCircle, Info, Printer
+  AlertCircle, Info, Printer, LogOut, Mail, Loader2, ShieldCheck
 } from 'lucide-react';
+import { createClient } from '@supabase/supabase-js';
 
 // ============================================================================
-// STORAGE LAYER
+// SUPABASE CLIENT
+//
+// Env vars (set these in Vercel: Project Settings → Environment Variables):
+//   VITE_SUPABASE_URL       = https://uafgkqkpbuhefswhkqof.supabase.co
+//   VITE_SUPABASE_ANON_KEY  = eyJ... (the anon public key, NOT service_role)
+//
+// For local dev, put the same two lines in a .env.local file at the project
+// root. Make sure .env* is in your .gitignore so you don't commit keys.
+//
+// NOTE: the anon key is public by design — it ships in the frontend bundle.
+// Row Level Security in Postgres is what actually protects your data.
 // ============================================================================
-const STORAGE_KEYS = {
-  projects: 'scifair:projects:v1',
-  votes: 'scifair:votes:v1',
-  voterId: 'scifair:voterId:v1',
-};
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-const storage = {
-  async get(key, shared = false) {
-    try {
-      const r = await window.storage.get(key, shared);
-      return r?.value ?? null;
-    } catch (err) {
-      console.warn('[storage.get] failed for key:', key, err);
-      return null;
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error(
+    '[supabase] Missing env vars. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY ' +
+    'in .env.local (local) or Vercel Project Settings (production).'
+  );
+}
+
+const supabase = createClient(SUPABASE_URL || '', SUPABASE_ANON_KEY || '', {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true, // handles the magic-link redirect
+  },
+});
+
+// ============================================================================
+// DEVICE-LEVEL VOTER ID
+//
+// We still use localStorage for ONE tiny thing: a random per-device ID that
+// identifies "this browser" when voting anonymously. The database enforces
+// one row per voter_id via a UNIQUE constraint, so even if someone clears
+// localStorage and tries again, the DB will reject a duplicate… wait, no:
+// clearing localStorage gives them a new voter_id. So this is "one vote per
+// device state" — about as good as you get without forcing a real login.
+// Good enough for a school science fair.
+// ============================================================================
+const VOTER_ID_KEY = 'scifair:voterId:v1';
+
+function getOrCreateVoterId() {
+  try {
+    let v = localStorage.getItem(VOTER_ID_KEY);
+    if (!v) {
+      v = 'v_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+      localStorage.setItem(VOTER_ID_KEY, v);
+    }
+    return v;
+  } catch {
+    // Private-mode Safari or storage disabled — fall back to ephemeral ID.
+    // User will get a fresh vote slot per refresh. Acceptable degradation.
+    return 'v_ephemeral_' + Math.random().toString(36).slice(2, 10);
+  }
+}
+
+// ============================================================================
+// SUPABASE DATA HELPERS
+// ============================================================================
+const db = {
+  async fetchProjects() {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('created_at', { ascending: true });
+    if (error) { console.warn('[fetchProjects]', error); return []; }
+    // Map snake_case DB columns to the camelCase the UI already expects.
+    return (data || []).map(r => ({
+      id: r.id,
+      title: r.title,
+      student: r.student,
+      grade: r.grade,
+      emoji: r.emoji,
+      color: r.color,
+      createdAt: new Date(r.created_at).getTime(),
+    }));
+  },
+
+  async fetchVotes() {
+    const { data, error } = await supabase
+      .from('votes')
+      .select('id, project_id, voter_id, created_at')
+      .order('created_at', { ascending: true });
+    if (error) { console.warn('[fetchVotes]', error); return []; }
+    return (data || []).map(r => ({
+      id: r.id,
+      projectId: r.project_id,
+      voterId: r.voter_id,
+      timestamp: new Date(r.created_at).getTime(),
+    }));
+  },
+
+  async insertProject(p) {
+    const { error } = await supabase.from('projects').insert({
+      id: p.id,
+      title: p.title,
+      student: p.student,
+      grade: p.grade,
+      emoji: p.emoji,
+      color: p.color,
+    });
+    if (error) { console.warn('[insertProject]', error); throw error; }
+  },
+
+  async deleteProject(id) {
+    // CASCADE on the votes table FK will delete dependent votes automatically.
+    const { error } = await supabase.from('projects').delete().eq('id', id);
+    if (error) { console.warn('[deleteProject]', error); throw error; }
+  },
+
+  async insertVote(projectId, voterId) {
+    const { error } = await supabase.from('votes').insert({
+      project_id: projectId,
+      voter_id: voterId,
+    });
+    if (error) {
+      // 23505 is the Postgres unique-violation code — means they already voted.
+      if (error.code === '23505') {
+        throw new Error('ALREADY_VOTED');
+      }
+      console.warn('[insertVote]', error);
+      throw error;
     }
   },
-  async set(key, value, shared = false) {
-    try {
-      await window.storage.set(key, value, shared);
-      return true;
-    } catch (err) {
-      console.warn('[storage.set] failed for key:', key, err);
-      return false;
-    }
+
+  async resetAllProjects() {
+    // Deleting all projects cascades to delete all votes.
+    const { error } = await supabase.from('projects').delete().neq('id', '__never__');
+    if (error) { console.warn('[resetAllProjects]', error); throw error; }
+  },
+
+  async resetMyVote(voterId) {
+    const { error } = await supabase.from('votes').delete().eq('voter_id', voterId);
+    if (error) { console.warn('[resetMyVote]', error); throw error; }
   },
 };
 
@@ -670,7 +781,14 @@ function QRView({ projects }) {
 // ============================================================================
 // ADMIN VIEW
 // ============================================================================
-function AdminView({ projects, votes, voteCount, addProject, deleteProject, resetAll }) {
+function AdminView({ projects, votes, voteCount, addProject, deleteProject, resetAll, session, signIn, signOut, authError, authPending, authEmailSent }) {
+  // Auth gate: if not logged in, show only the magic-link login form.
+  if (!session) {
+    return <AdminLogin signIn={signIn} authError={authError} authPending={authPending} authEmailSent={authEmailSent} />;
+  }
+
+  const adminEmail = session.user?.email || 'unknown';
+
   const [form, setForm] = useState({
     title: '', student: '', grade: '', emoji: EMOJI_POOL[0], color: ACCENT_COLORS[0].name,
   });
@@ -693,13 +811,24 @@ function AdminView({ projects, votes, voteCount, addProject, deleteProject, rese
   return (
     <div className="min-h-screen pt-24 pb-12 px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] text-[#ff5eb8] mb-2">
-            ◆ Event console
+        <div className="mb-8 flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] text-[#ff5eb8] mb-2">
+              ◆ Event console
+            </div>
+            <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-5xl text-white leading-none">
+              Manage projects.
+            </h1>
           </div>
-          <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-5xl text-white leading-none">
-            Manage projects.
-          </h1>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10">
+            <ShieldCheck size={14} className="text-[#c8ff2e]" />
+            <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/70">{adminEmail}</span>
+            <button onClick={signOut}
+              className="ml-1 flex items-center gap-1 text-xs text-white/50 hover:text-[#ff7a6b] transition"
+              style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+              <LogOut size={12} /> Sign out
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
@@ -845,6 +974,92 @@ function Step({ n, title, children }) {
 }
 
 // ============================================================================
+// ADMIN LOGIN — magic link flow
+// ============================================================================
+function AdminLogin({ signIn, authError, authPending, authEmailSent }) {
+  const [email, setEmail] = useState('');
+
+  const submit = (e) => {
+    e?.preventDefault?.();
+    if (!email.trim() || authPending) return;
+    signIn(email.trim());
+  };
+
+  return (
+    <div className="min-h-screen pt-24 pb-12 px-6 flex items-center justify-center">
+      <div className="max-w-md w-full">
+        <div className="rounded-2xl p-8 border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,94,184,0.15)', border: '1px solid rgba(255,94,184,0.3)' }}>
+              <ShieldCheck size={20} style={{ color: '#ff5eb8' }} />
+            </div>
+            <div>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] uppercase tracking-[0.25em] text-white/50">
+                Restricted
+              </div>
+              <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-2xl text-white leading-tight">
+                Admin sign in
+              </h2>
+            </div>
+          </div>
+
+          {authEmailSent ? (
+            <div className="text-center py-4">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4"
+                style={{ background: 'rgba(200,255,46,0.15)', border: '1px solid rgba(200,255,46,0.3)' }}>
+                <Mail size={20} className="text-[#c8ff2e]" />
+              </div>
+              <p style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-white text-lg mb-2">
+                Check your inbox
+              </p>
+              <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-sm text-white/60">
+                We sent a magic link. Click it from the same browser and you'll land back here signed in.
+              </p>
+            </div>
+          ) : (
+            <>
+              <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-sm text-white/60 mb-5">
+                Admin access is restricted to pre-approved emails. Enter yours to receive a one-click sign-in link.
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] uppercase tracking-widest text-white/50 block mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && submit(e)}
+                    placeholder="you@example.com"
+                    autoFocus
+                    className="w-full px-3 py-2.5 rounded-lg bg-black/30 border border-white/10 text-white focus:border-[#c8ff2e] focus:outline-none transition"
+                    style={{ fontFamily: 'Inter Tight, sans-serif', fontSize: 14 }}
+                  />
+                </div>
+
+                {authError && (
+                  <div className="p-3 rounded-lg flex items-start gap-2" style={{ background: 'rgba(255,122,107,0.08)', border: '1px solid rgba(255,122,107,0.3)' }}>
+                    <AlertCircle size={14} className="text-[#ff7a6b] flex-shrink-0 mt-0.5" />
+                    <p style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/80">{authError}</p>
+                  </div>
+                )}
+
+                <button onClick={submit} disabled={authPending || !email.trim()}
+                  className="w-full py-3 rounded-xl bg-[#c8ff2e] text-black font-semibold hover:scale-[1.01] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+                  {authPending ? (<><Loader2 size={16} className="animate-spin" /> Sending...</>) : (<><Mail size={16} /> Send magic link</>)}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
 // ROOT
 // ============================================================================
 export default function App() {
@@ -856,61 +1071,88 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [lastVoteFlash, setLastVoteFlash] = useState(null);
   const votesRef = useRef([]);
-  const suppressPollUntilRef = useRef(0);
 
-  // Initial load
+  // Auth state for admin
+  const [session, setSession] = useState(null);
+  const [authError, setAuthError] = useState('');
+  const [authPending, setAuthPending] = useState(false);
+  const [authEmailSent, setAuthEmailSent] = useState(false);
+
+  // ----- Initial load: voter ID, projects, votes, auth session -----
   useEffect(() => {
+    setVoterId(getOrCreateVoterId());
+
     (async () => {
-      let vid = await storage.get(STORAGE_KEYS.voterId, false);
-      if (!vid) {
-        vid = genId('v');
-        await storage.set(STORAGE_KEYS.voterId, vid, false);
-      }
-      setVoterId(vid);
-
-      const p = await storage.get(STORAGE_KEYS.projects, true);
-      setProjects(p ? JSON.parse(p) : []);
-
-      const v = await storage.get(STORAGE_KEYS.votes, true);
-      const parsedVotes = v ? JSON.parse(v) : [];
-      setVotes(parsedVotes);
-      votesRef.current = parsedVotes;
-
+      const [p, v, sessionRes] = await Promise.all([
+        db.fetchProjects(),
+        db.fetchVotes(),
+        supabase.auth.getSession(),
+      ]);
+      setProjects(p);
+      setVotes(v);
+      votesRef.current = v;
+      setSession(sessionRes.data.session);
       setLoading(false);
     })();
+
+    // Listen for auth state changes (magic-link redirect lands here).
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+      if (newSession) {
+        setAuthEmailSent(false);
+        setAuthError('');
+      }
+    });
+    return () => sub.subscription.unsubscribe();
   }, []);
 
-  // Poll for updates
+  // ----- Realtime subscriptions: live updates across ALL devices -----
+  // This is the big win over localStorage: when a voter taps their phone, the
+  // projector's leaderboard updates within ~500ms with no polling.
   useEffect(() => {
     if (loading) return;
-    const interval = setInterval(async () => {
-      // Don't poll right after a local write — let storage catch up
-      // so we don't overwrite our just-updated local state with stale data.
-      if (Date.now() < suppressPollUntilRef.current) return;
 
-      const p = await storage.get(STORAGE_KEYS.projects, true);
-      const v = await storage.get(STORAGE_KEYS.votes, true);
-
-      // Only apply updates when storage actually returned data.
-      // null = read failed or key doesn't exist yet — don't clobber local state.
-      if (p !== null) {
-        setProjects(JSON.parse(p));
-      }
-      if (v !== null) {
-        const newVotes = JSON.parse(v);
-        if (newVotes.length > votesRef.current.length) {
-          const latest = newVotes[newVotes.length - 1];
-          setLastVoteFlash(latest.projectId);
-          setTimeout(() => setLastVoteFlash(null), 2000);
+    const channel = supabase
+      .channel('scifair-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, async () => {
+        const p = await db.fetchProjects();
+        setProjects(p);
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'votes' }, async (payload) => {
+        const newVote = {
+          id: payload.new.id,
+          projectId: payload.new.project_id,
+          voterId: payload.new.voter_id,
+          timestamp: new Date(payload.new.created_at).getTime(),
+        };
+        setVotes(prev => {
+          // Guard against echoes of our own optimistic insert.
+          if (prev.some(v => v.id === newVote.id)) return prev;
+          const next = [...prev, newVote];
+          votesRef.current = next;
+          return next;
+        });
+        setLastVoteFlash(newVote.projectId);
+        setTimeout(() => setLastVoteFlash(null), 2000);
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'votes' }, async () => {
+        // Re-fetch on delete. DELETE payloads only contain the primary key,
+        // and batched deletes (reset all) are easier to handle with a refetch.
+        const v = await db.fetchVotes();
+        setVotes(v);
+        votesRef.current = v;
+      })
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.warn('[realtime] subscription issue:', status,
+            '— check that Realtime is enabled on projects + votes tables in Supabase.');
         }
-        setVotes(newVotes);
-        votesRef.current = newVotes;
-      }
-    }, 3000);
-    return () => clearInterval(interval);
+      });
+
+    return () => { supabase.removeChannel(channel); };
   }, [loading]);
 
-  // Derived
+  // ----- Derived state -----
   const voteCount = useMemo(() => {
     const map = {};
     projects.forEach(p => { map[p.id] = 0; });
@@ -938,7 +1180,33 @@ export default function App() {
     return r;
   }, [sortedProjects, voteCount]);
 
-  // Actions
+  // ----- Auth actions -----
+  const signIn = useCallback(async (email) => {
+    setAuthPending(true);
+    setAuthError('');
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+          shouldCreateUser: true,
+        },
+      });
+      if (error) throw error;
+      setAuthEmailSent(true);
+    } catch (err) {
+      setAuthError(err.message || 'Sign-in failed. Check your email and try again.');
+    } finally {
+      setAuthPending(false);
+    }
+  }, []);
+
+  const signOut = useCallback(async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+  }, []);
+
+  // ----- Data actions -----
   const addProject = useCallback(async (data) => {
     const np = {
       id: genId('p'),
@@ -949,52 +1217,85 @@ export default function App() {
       color: data.color,
       createdAt: Date.now(),
     };
-    const updated = [...projects, np];
-    setProjects(updated);
-    suppressPollUntilRef.current = Date.now() + 2000;
-    await storage.set(STORAGE_KEYS.projects, JSON.stringify(updated), true);
-  }, [projects]);
+    // Optimistic update — realtime will confirm, or we rollback on error.
+    setProjects(prev => [...prev, np]);
+    try {
+      await db.insertProject(np);
+    } catch (err) {
+      setProjects(prev => prev.filter(p => p.id !== np.id));
+      alert(
+        err.message?.includes('row-level security')
+          ? 'Permission denied. Is this email listed in the admins table?'
+          : 'Failed to save project: ' + (err.message || 'unknown error')
+      );
+    }
+  }, []);
 
   const deleteProject = useCallback(async (id) => {
-    const updated = projects.filter(p => p.id !== id);
-    const updatedVotes = votes.filter(v => v.projectId !== id);
-    setProjects(updated);
-    setVotes(updatedVotes);
-    votesRef.current = updatedVotes;
-    suppressPollUntilRef.current = Date.now() + 2000;
-    await storage.set(STORAGE_KEYS.projects, JSON.stringify(updated), true);
-    await storage.set(STORAGE_KEYS.votes, JSON.stringify(updatedVotes), true);
+    const prevProjects = projects;
+    const prevVotes = votes;
+    setProjects(prev => prev.filter(p => p.id !== id));
+    setVotes(prev => {
+      const next = prev.filter(v => v.projectId !== id);
+      votesRef.current = next;
+      return next;
+    });
+    try {
+      await db.deleteProject(id);
+    } catch (err) {
+      setProjects(prevProjects);
+      setVotes(prevVotes);
+      votesRef.current = prevVotes;
+      alert('Failed to delete: ' + (err.message || 'unknown error'));
+    }
   }, [projects, votes]);
 
   const castVote = useCallback(async (projectId) => {
+    if (!voterId) return;
     if (votes.some(v => v.voterId === voterId)) return;
-    const newVote = { projectId, voterId, timestamp: Date.now() };
-    const updated = [...votes, newVote];
-    setVotes(updated);
-    votesRef.current = updated;
     setLastVoteFlash(projectId);
     setTimeout(() => setLastVoteFlash(null), 2000);
-    suppressPollUntilRef.current = Date.now() + 2000;
-    await storage.set(STORAGE_KEYS.votes, JSON.stringify(updated), true);
+    try {
+      await db.insertVote(projectId, voterId);
+      // Realtime INSERT handler will append the vote to local state.
+    } catch (err) {
+      if (err.message === 'ALREADY_VOTED') {
+        // Pull fresh votes so hasVoted becomes true in the UI.
+        const v = await db.fetchVotes();
+        setVotes(v);
+        votesRef.current = v;
+      } else {
+        alert('Vote failed: ' + (err.message || 'unknown error'));
+      }
+    }
   }, [votes, voterId]);
 
   const resetAll = useCallback(async () => {
     if (!confirm('Reset ALL projects and votes? This cannot be undone.')) return;
+    const prevProjects = projects;
+    const prevVotes = votes;
     setProjects([]);
     setVotes([]);
     votesRef.current = [];
-    suppressPollUntilRef.current = Date.now() + 2000;
-    await storage.set(STORAGE_KEYS.projects, JSON.stringify([]), true);
-    await storage.set(STORAGE_KEYS.votes, JSON.stringify([]), true);
-  }, []);
+    try {
+      await db.resetAllProjects();
+    } catch (err) {
+      setProjects(prevProjects);
+      setVotes(prevVotes);
+      votesRef.current = prevVotes;
+      alert('Reset failed: ' + (err.message || 'unknown error'));
+    }
+  }, [projects, votes]);
 
   const resetMyVote = useCallback(async () => {
-    const updated = votes.filter(v => v.voterId !== voterId);
-    setVotes(updated);
-    votesRef.current = updated;
-    suppressPollUntilRef.current = Date.now() + 2000;
-    await storage.set(STORAGE_KEYS.votes, JSON.stringify(updated), true);
-  }, [votes, voterId]);
+    if (!voterId) return;
+    try {
+      await db.resetMyVote(voterId);
+      // Realtime DELETE handler will refresh votes list.
+    } catch (err) {
+      alert('Reset vote failed: ' + (err.message || 'unknown error'));
+    }
+  }, [voterId]);
 
   if (loading) {
     return (
@@ -1043,6 +1344,12 @@ export default function App() {
           addProject={addProject}
           deleteProject={deleteProject}
           resetAll={resetAll}
+          session={session}
+          signIn={signIn}
+          signOut={signOut}
+          authError={authError}
+          authPending={authPending}
+          authEmailSent={authEmailSent}
         />
       )}
 
@@ -1061,3 +1368,4 @@ export default function App() {
     </div>
   );
 }
+
