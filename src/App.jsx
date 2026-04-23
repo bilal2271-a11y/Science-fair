@@ -4,7 +4,7 @@ import {
   Medal, QrCode, ChevronRight, Beaker, Atom as AtomIcon, Microscope, Vote,
   Radio, AlertCircle, Info, Printer, Wifi, WifiOff,
 } from 'lucide-react';
-import { storage } from './storage.js';
+import App from './science_fair_voting.jsx';
 
 // ============================================================================
 // CONSTANTS
