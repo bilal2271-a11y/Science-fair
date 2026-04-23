@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/microfrontends.json",
+  "applications": {
+    "science-fair-7j4o": {
+      "development": {
+        "fallback": "science-fair-7j4o.vercel.app"
+      }
+    }
+  }
+}
