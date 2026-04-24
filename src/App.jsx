@@ -3,7 +3,7 @@ import {
   Plus, Trash2, Trophy, Zap, Users, Sparkles, X, Check, Flame, TrendingUp,
   Monitor, Settings, RotateCcw, Crown, Award, Medal, QrCode, ArrowLeft,
   ChevronRight, Beaker, Atom, Microscope, Vote, Activity, Radio, Download,
-  AlertCircle, Info, Printer, LogOut, Mail, Loader2, ShieldCheck
+  AlertCircle, Info, Printer, LogOut, Mail, Loader2, ShieldCheck, Menu
 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -273,6 +273,7 @@ function AmbientBG() {
 // NAV
 // ============================================================================
 function Nav({ view, setView, totalVotes }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const items = [
     { id: 'display', label: 'Display', icon: Monitor },
     { id: 'vote',    label: 'Vote',    icon: Vote },
@@ -281,24 +282,35 @@ function Nav({ view, setView, totalVotes }) {
   ];
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl bg-black/40 border-b border-white/5">
-      <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="relative w-8 h-8 rounded-md flex items-center justify-center"
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
+        {/* Logo */}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="relative w-6 h-6 sm:w-8 sm:h-8 rounded-md flex items-center justify-center"
             style={{ background: 'linear-gradient(135deg,#c8ff2e,#5eeaff)' }}>
-            <Atom size={18} className="text-black" strokeWidth={2.5} />
+            <Atom size={16} className="sm:hidden text-black" strokeWidth={2.5} />
+            <Atom size={18} className="hidden sm:block text-black" strokeWidth={2.5} />
           </div>
-          <div className="flex flex-col leading-none">
-            <span style={{ fontFamily: 'Fraunces, serif', fontWeight: 600, fontSize: 18, letterSpacing: '-0.02em' }} className="text-white">Scifair Live</span>
-            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9 }} className="text-white/40 tracking-wider uppercase mt-0.5">voting console</span>
+          <div className="hidden sm:flex flex-col leading-none">
+            <span style={{ fontFamily: 'Fraunces, serif', fontWeight: 600, fontSize: 16, letterSpacing: '-0.02em' }} className="text-white">Scifair Live</span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 8 }} className="text-white/40 tracking-wider uppercase">voting</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/10">
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="sm:hidden text-white/60 hover:text-white"
+        >
+          {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+
+        {/* Desktop Nav */}
+        <div className="hidden sm:flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/10">
           {items.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setView(id)}
-              className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-sm transition-all ${
+              className={`flex items-center gap-2 px-3 md:px-4 py-1.5 rounded-full text-xs md:text-sm transition-all ${
                 view === id
                   ? 'bg-white text-black font-semibold'
                   : 'text-white/60 hover:text-white hover:bg-white/5'
@@ -306,21 +318,46 @@ function Nav({ view, setView, totalVotes }) {
               style={{ fontFamily: 'Inter Tight, sans-serif' }}
             >
               <Icon size={14} />
-              {label}
+              <span className="hidden md:inline">{label}</span>
             </button>
           ))}
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+        {/* Vote Counter */}
+        <div className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-full bg-white/5 border border-white/10 flex-shrink-0">
           <div className="relative">
             <div className="w-2 h-2 rounded-full bg-[#c8ff2e]" />
             <div className="absolute inset-0 w-2 h-2 rounded-full bg-[#c8ff2e] animate-ping" />
           </div>
-          <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/70">
-            {totalVotes.toString().padStart(3, '0')} votes · LIVE
+          <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs text-white/70">
+            {totalVotes.toString().padStart(3, '0')}
           </span>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="sm:hidden bg-black/80 border-t border-white/10 p-3 space-y-2">
+          {items.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => {
+                setView(id);
+                setMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
+                view === id
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-white/60 hover:text-white hover:bg-white/10'
+              }`}
+              style={{ fontFamily: 'Inter Tight, sans-serif' }}
+            >
+              <Icon size={16} />
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
@@ -356,14 +393,14 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6">
       <div className="max-w-[1600px] mx-auto">
         {/* Header with BISK Logo */}
-        <div className="flex items-end justify-between mb-12">
-          <div className="flex items-end gap-8">
-            {/* BISK Logo with orbiting electrons */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-8 mb-8 sm:mb-12">
+          <div className="flex items-end gap-3 sm:gap-8 flex-wrap">
+            {/* BISK Logo - Responsive */}
             <div className="relative flex-shrink-0">
-              <div className="w-[140px] h-[140px] rounded-3xl p-4 flex items-center justify-center"
+              <div className="w-20 sm:w-28 md:w-[140px] h-20 sm:h-28 md:h-[140px] rounded-2xl sm:rounded-3xl p-2 sm:p-4 flex items-center justify-center"
                 style={{ 
                   background: 'linear-gradient(135deg, rgba(200,255,46,0.1), rgba(94,234,255,0.1))',
                   border: '2px solid rgba(200,255,46,0.3)',
@@ -372,21 +409,21 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                 <img 
                   src="https://bisk.edu.krd/wp-content/uploads/2024/07/BISK-BADGE-231x300.png"
                   alt="BISK Logo"
-                  className="w-24 h-24 object-contain drop-shadow-lg"
+                  className="w-14 sm:w-20 md:w-24 h-14 sm:h-20 md:h-24 object-contain drop-shadow-lg"
                   style={{ animation: 'logoFloat 4s ease-in-out infinite' }}
                 />
               </div>
-              <OrbitingElectrons className="w-[220px] h-[220px] -top-10 -left-10" />
+              <OrbitingElectrons className="hidden sm:block w-32 sm:w-48 md:w-[220px] h-32 sm:h-48 md:h-[220px] -top-8 sm:-top-10 -left-8 sm:-left-10" />
             </div>
             
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] text-[#c8ff2e]">
-                  ◆ Live Standings
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#c8ff2e]">
+                  ◆ Live
                 </span>
               </div>
               <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
-                <span className="block text-5xl md:text-7xl">
+                <span className="block text-2xl sm:text-4xl md:text-5xl lg:text-7xl">
                   <span style={{ color: '#ff4444', display: 'inline-block' }}>B</span>
                   <span 
                     style={{ 
@@ -401,36 +438,37 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                     <span 
                       style={{
                         position: 'absolute',
-                        bottom: '-12px',
+                        bottom: '-8px',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        width: '12px',
-                        height: '16px',
+                        width: '8px',
+                        height: '12px',
                         background: 'linear-gradient(to bottom, #ff9933, #ff6600)',
-                        borderRadius: '6px 6px 0 0',
+                        borderRadius: '4px 4px 0 0',
                         animation: 'flameGlow 0.4s ease-in-out infinite',
                         boxShadow: '0 0 20px #ff6600, 0 0 40px rgba(255,102,0,0.8)',
-                        filter: 'drop-shadow(0 0 10px #ff9933)'
+                        filter: 'drop-shadow(0 0 10px #ff9933)',
+                        fontSize: '0.7em'
                       }}
                     />
                   </span>
                   <span style={{ color: '#1a3a70', display: 'inline-block' }}>5</span>
                   <span style={{ color: '#ff4444', display: 'inline-block' }}>K</span>
-                  {' '}Science Fair
                 </span>
+                <span className="block text-lg sm:text-2xl md:text-3xl lg:text-4xl text-white">Science Fair</span>
               </h1>
             </div>
           </div>
-          <div className="hidden lg:flex flex-col items-end gap-3">
+          <div className="hidden lg:flex flex-col items-end gap-2 flex-shrink-0">
             <StatPill label="Projects" value={projects.length} />
-            <StatPill label="Votes Cast" value={votes.length} highlight />
+            <StatPill label="Votes" value={votes.length} highlight />
             <StatPill label="Leader" value={sortedProjects[0]?.title.slice(0, 18) || '—'} mono={false} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_380px] gap-4 sm:gap-6 md:gap-8">
           {/* Leaderboard */}
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-3 md:space-y-4">
             {sortedProjects.map((p, idx) => {
               const count = voteCount[p.id] || 0;
               const pct = (count / maxBar) * 100;
@@ -499,20 +537,20 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                       borderRight: isLeader ? `2px solid #ff6666` : `2px solid ${c.hex}`,
                     }} />
 
-                  <div className="relative flex items-center gap-5 p-6">
-                    {/* Rank with podium styling */}
-                    <div className="flex-shrink-0 w-16 h-20 flex items-center justify-center relative">
+                  <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 p-3 sm:p-4 md:p-5 lg:p-6">
+                    {/* Rank with podium styling - hidden on small mobile */}
+                    <div className="hidden xs:flex flex-shrink-0 w-12 sm:w-14 md:w-16 h-16 sm:h-18 md:h-20 items-center justify-center relative">
                       <RankBadge rank={idx + 1} isLeader={isLeader} color={c} />
                       {isLeader && (
-                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce">
+                        <div className="absolute -top-4 sm:-top-5 md:-top-6 left-1/2 transform -translate-x-1/2 text-lg sm:text-xl md:text-2xl animate-bounce">
                           🏆
                         </div>
                       )}
                     </div>
 
                     {/* Emoji + info */}
-                    <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="text-5xl flex-shrink-0 w-16 h-16 flex items-center justify-center rounded-xl"
+                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+                      <div className="text-3xl sm:text-4xl md:text-5xl flex-shrink-0 w-10 sm:w-12 md:w-14 lg:w-16 h-10 sm:h-12 md:h-14 lg:h-16 flex items-center justify-center rounded-lg sm:rounded-xl"
                         style={{ 
                           background: c.soft, 
                           border: `2px solid ${c.hex}`,
@@ -523,13 +561,13 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                       </div>
                       <div className="min-w-0 flex-1">
                         <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, letterSpacing: '-0.01em' }} 
-                          className="text-2xl md:text-3xl text-white truncate leading-tight">
+                          className="text-sm sm:text-base md:text-xl lg:text-2xl xl:text-3xl text-white truncate leading-tight">
                           {p.title}
                         </h3>
-                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/50 mt-2 flex items-center gap-2">
-                          <span>{p.student}</span>
-                          <span className="w-1 h-1 rounded-full bg-white/30" />
-                          <span>Grade {p.grade}</span>
+                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs text-white/50 mt-0.5 sm:mt-1 md:mt-2 hidden sm:flex items-center gap-2">
+                          <span className="truncate">{p.student}</span>
+                          <span className="w-1 h-1 rounded-full bg-white/30 flex-shrink-0" />
+                          <span className="flex-shrink-0">Grade {p.grade}</span>
                         </div>
                       </div>
                     </div>
@@ -537,10 +575,10 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                     {/* Count with dynamic scaling */}
                     <div className="flex-shrink-0 text-right">
                       <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, color: c.hex, letterSpacing: '-0.04em' }}
-                        className={`text-6xl md:text-7xl leading-none transition-transform duration-300 ${flashing ? 'scale-125 animate-ping' : 'scale-100'}`}>
+                        className={`text-2xl sm:text-3xl md:text-5xl lg:text-6xl xl:text-7xl leading-none transition-transform duration-300 ${flashing ? 'scale-125 animate-ping' : 'scale-100'}`}>
                         {count}
                       </div>
-                      <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] uppercase tracking-widest text-white/40 mt-1">
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[8px] sm:text-[10px] uppercase tracking-widest text-white/40 mt-0.5 sm:mt-1">
                         {count === 1 ? 'vote' : 'votes'}
                       </div>
                     </div>
