@@ -1558,39 +1558,47 @@ export default function App() {
         
         @keyframes parabolaPath {
           0% { 
-            transform: translateX(0) translateY(0) rotateZ(0deg); 
+            transform: translateX(0) translateY(0) rotateZ(0deg) scale(1); 
             opacity: 1;
           }
-          12% { 
-            transform: translateX(30px) translateY(-20px) rotateZ(15deg); 
+          10% { 
+            transform: translateX(60px) translateY(-40px) rotateZ(25deg) scale(1.05); 
             opacity: 1;
           }
-          25% { 
-            transform: translateX(60px) translateY(-50px) rotateZ(30deg); 
+          20% { 
+            transform: translateX(150px) translateY(-150px) rotateZ(45deg) scale(1.1); 
             opacity: 1;
           }
-          37% { 
-            transform: translateX(40px) translateY(-70px) rotateZ(20deg); 
+          30% { 
+            transform: translateX(200px) translateY(-300px) rotateZ(60deg) scale(1.08); 
             opacity: 1;
+          }
+          40% { 
+            transform: translateX(150px) translateY(-450px) rotateZ(45deg) scale(1); 
+            opacity: 0.9;
           }
           50% { 
-            transform: translateX(0) translateY(-60px) rotateZ(0deg); 
+            transform: translateX(0px) translateY(-500px) rotateZ(0deg) scale(0.95); 
+            opacity: 0.8;
+          }
+          60% { 
+            transform: translateX(-150px) translateY(-400px) rotateZ(-45deg) scale(1); 
+            opacity: 0.9;
+          }
+          70% { 
+            transform: translateX(-200px) translateY(-250px) rotateZ(-60deg) scale(1.08); 
             opacity: 1;
           }
-          62% { 
-            transform: translateX(-40px) translateY(-45px) rotateZ(-20deg); 
+          80% { 
+            transform: translateX(-100px) translateY(-80px) rotateZ(-35deg) scale(1.05); 
             opacity: 1;
           }
-          75% { 
-            transform: translateX(-55px) translateY(-20px) rotateZ(-25deg); 
-            opacity: 1;
-          }
-          87% { 
-            transform: translateX(-25px) translateY(-10px) rotateZ(-10deg); 
+          90% { 
+            transform: translateX(-30px) translateY(-20px) rotateZ(-10deg) scale(1.02); 
             opacity: 1;
           }
           100% { 
-            transform: translateX(0) translateY(0) rotateZ(0deg); 
+            transform: translateX(0) translateY(0) rotateZ(0deg) scale(1); 
             opacity: 1;
           }
         }
