@@ -386,7 +386,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                 </span>
               </div>
               <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
-                <span className="block text-5xl md:text-7xl">The Science</span>
+                <span className="block text-5xl md:text-7xl">B<span style={{ color: '#c8ff2e' }}>15</span>SK Science</span>
                 <span className="block text-5xl md:text-7xl italic" style={{ color: '#c8ff2e' }}>Fair</span>
               </h1>
             </div>
