@@ -201,6 +201,49 @@ function useFonts() {
 }
 
 // ============================================================================
+// ORBITING ELECTRONS
+// ============================================================================
+function OrbitingElectrons({ className = '' }) {
+  return (
+    <div className={`absolute pointer-events-none ${className}`}>
+      {/* Orbit rings */}
+      <div className="absolute w-[240px] h-[240px] rounded-full border border-[#c8ff2e]/20 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2" />
+      <div className="absolute w-[360px] h-[360px] rounded-full border border-[#5eeaff]/15 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2" />
+      <div className="absolute w-[480px] h-[480px] rounded-full border border-[#ff5eb8]/10 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2" />
+      
+      {/* Orbiting electrons */}
+      {[0, 1, 2].map((i) => (
+        <div
+          key={`e${i}`}
+          className="absolute w-3 h-3 rounded-full"
+          style={{
+            background: i % 2 === 0 ? '#c8ff2e' : '#5eeaff',
+            boxShadow: i % 2 === 0 ? '0 0 12px #c8ff2e' : '0 0 12px #5eeaff',
+            animation: `orbit${i + 1} ${20 + i * 4}s linear infinite`,
+            transformOrigin: '120px 0',
+          }}
+        />
+      ))}
+      
+      <style>{`
+        @keyframes orbit1 {
+          0% { transform: rotate(0deg) translateX(120px) rotate(0deg); }
+          100% { transform: rotate(360deg) translateX(120px) rotate(-360deg); }
+        }
+        @keyframes orbit2 {
+          0% { transform: rotate(120deg) translateX(180px) rotate(0deg); }
+          100% { transform: rotate(480deg) translateX(180px) rotate(-360deg); }
+        }
+        @keyframes orbit3 {
+          0% { transform: rotate(240deg) translateX(240px) rotate(0deg); }
+          100% { transform: rotate(600deg) translateX(240px) rotate(-360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ============================================================================
 // AMBIENT BACKGROUND
 // ============================================================================
 function AmbientBG() {
@@ -315,20 +358,40 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
   return (
     <div className="min-h-screen pt-24 pb-12 px-6">
       <div className="max-w-[1600px] mx-auto">
-        {/* Header */}
-        <div className="flex items-end justify-between mb-10">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] text-[#c8ff2e]">
-                ◆ Live Standings
-              </span>
+        {/* Header with BISK Logo */}
+        <div className="flex items-end justify-between mb-12">
+          <div className="flex items-end gap-8">
+            {/* BISK Logo with orbiting electrons */}
+            <div className="relative flex-shrink-0">
+              <div className="w-[140px] h-[140px] rounded-3xl p-4 flex items-center justify-center"
+                style={{ 
+                  background: 'linear-gradient(135deg, rgba(200,255,46,0.1), rgba(94,234,255,0.1))',
+                  border: '2px solid rgba(200,255,46,0.3)',
+                  boxShadow: '0 0 40px rgba(200,255,46,0.2)'
+                }}>
+                <img 
+                  src="https://bisk.edu.krd/wp-content/uploads/2024/07/BISK-BADGE-231x300.png"
+                  alt="BISK Logo"
+                  className="w-24 h-24 object-contain drop-shadow-lg"
+                  style={{ animation: 'logoFloat 4s ease-in-out infinite' }}
+                />
+              </div>
+              <OrbitingElectrons className="w-[220px] h-[220px] -top-10 -left-10" />
             </div>
-            <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
-              <span className="block text-6xl md:text-8xl">The Science</span>
-              <span className="block text-6xl md:text-8xl italic" style={{ color: '#c8ff2e' }}>Fair</span>
-            </h1>
+            
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] text-[#c8ff2e]">
+                  ◆ Live Standings
+                </span>
+              </div>
+              <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
+                <span className="block text-5xl md:text-7xl">The Science</span>
+                <span className="block text-5xl md:text-7xl italic" style={{ color: '#c8ff2e' }}>Fair</span>
+              </h1>
+            </div>
           </div>
-          <div className="hidden md:flex flex-col items-end gap-3">
+          <div className="hidden lg:flex flex-col items-end gap-3">
             <StatPill label="Projects" value={projects.length} />
             <StatPill label="Votes Cast" value={votes.length} highlight />
             <StatPill label="Leader" value={sortedProjects[0]?.title.slice(0, 18) || '—'} mono={false} />
@@ -337,49 +400,66 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8">
           {/* Leaderboard */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {sortedProjects.map((p, idx) => {
               const count = voteCount[p.id] || 0;
               const pct = (count / maxBar) * 100;
               const c = colorOf(p.color);
               const flashing = lastVoteFlash === p.id;
               const isLeader = idx === 0 && count > 0;
+              
               return (
                 <div
                   key={p.id}
                   className="relative rounded-2xl overflow-hidden transition-all duration-700"
                   style={{
                     background: flashing ? c.soft : 'rgba(255,255,255,0.025)',
-                    border: `1px solid ${flashing ? c.hex : 'rgba(255,255,255,0.06)'}`,
-                    boxShadow: flashing ? `0 0 40px ${c.glow}` : 'none',
-                    transform: flashing ? 'scale(1.005)' : 'scale(1)',
+                    border: `2px solid ${flashing ? c.hex : 'rgba(255,255,255,0.06)'}`,
+                    boxShadow: flashing 
+                      ? `0 0 60px ${c.glow}, inset 0 0 40px ${c.glow}` 
+                      : isLeader
+                      ? `0 0 40px rgba(200,255,46,0.3), inset 0 0 20px rgba(200,255,46,0.1)`
+                      : 'none',
+                    transform: flashing ? 'scale(1.008)' : 'scale(1)',
+                    animation: `slideIn${idx} 0.6s ease-out ${idx * 0.08}s both`,
                   }}
                 >
                   {/* progress bar fill */}
                   <div className="absolute inset-y-0 left-0 transition-all duration-1000 ease-out"
                     style={{
                       width: `${pct}%`,
-                      background: `linear-gradient(90deg, ${c.hex}22 0%, ${c.hex}08 100%)`,
+                      background: `linear-gradient(90deg, ${c.hex}44 0%, ${c.hex}12 100%)`,
                       borderRight: `2px solid ${c.hex}`,
                     }} />
 
-                  <div className="relative flex items-center gap-5 p-5">
-                    {/* Rank */}
-                    <div className="flex-shrink-0 w-14">
+                  <div className="relative flex items-center gap-5 p-6">
+                    {/* Rank with podium styling */}
+                    <div className="flex-shrink-0 w-16 h-20 flex items-center justify-center relative">
                       <RankBadge rank={idx + 1} isLeader={isLeader} color={c} />
+                      {isLeader && (
+                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-2xl animate-bounce">
+                          🏆
+                        </div>
+                      )}
                     </div>
 
                     {/* Emoji + info */}
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="text-4xl flex-shrink-0 w-14 h-14 flex items-center justify-center rounded-xl"
-                        style={{ background: c.soft, border: `1px solid ${c.hex}33` }}>
+                      <div className="text-5xl flex-shrink-0 w-16 h-16 flex items-center justify-center rounded-xl"
+                        style={{ 
+                          background: c.soft, 
+                          border: `2px solid ${c.hex}`,
+                          boxShadow: `0 0 20px ${c.glow}`,
+                          animation: isLeader ? 'pulse 2s ease-in-out infinite' : 'none'
+                        }}>
                         {p.emoji}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, letterSpacing: '-0.01em' }} className="text-xl md:text-2xl text-white truncate">
+                        <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, letterSpacing: '-0.01em' }} 
+                          className="text-2xl md:text-3xl text-white truncate leading-tight">
                           {p.title}
                         </h3>
-                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/50 mt-1 flex items-center gap-2">
+                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/50 mt-2 flex items-center gap-2">
                           <span>{p.student}</span>
                           <span className="w-1 h-1 rounded-full bg-white/30" />
                           <span>Grade {p.grade}</span>
@@ -387,10 +467,10 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                       </div>
                     </div>
 
-                    {/* Count */}
+                    {/* Count with dynamic scaling */}
                     <div className="flex-shrink-0 text-right">
                       <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, color: c.hex, letterSpacing: '-0.04em' }}
-                        className={`text-5xl md:text-6xl leading-none transition-transform duration-300 ${flashing ? 'scale-110' : 'scale-100'}`}>
+                        className={`text-6xl md:text-7xl leading-none transition-transform duration-300 ${flashing ? 'scale-125 animate-ping' : 'scale-100'}`}>
                         {count}
                       </div>
                       <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] uppercase tracking-widest text-white/40 mt-1">
@@ -1360,6 +1440,50 @@ export default function App() {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+        
+        @keyframes logoFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 20px rgba(200,255,46,0.4); }
+          50% { box-shadow: 0 0 40px rgba(200,255,46,0.8); }
+        }
+        
+        @keyframes slideIn0 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn1 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn2 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn3 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn4 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn5 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn6 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn7 { 
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
         @media print {
           nav, button { display: none !important; }
           body { background: white !important; }
