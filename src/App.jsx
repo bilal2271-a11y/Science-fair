@@ -390,7 +390,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                   <span style={{ display: 'inline-block', animation: 'rocketMotion0 5s ease-in-out infinite' }}>B</span>
                   <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion1 5s ease-in-out infinite' }}>1</span>
                   <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion2 5s ease-in-out infinite' }}>5</span>
-                  <span style={{ display: 'inline-block', animation: 'rocketMotion3 5s ease-in-out infinite' }}>SK</span>
+                  <span style={{ display: 'inline-block', animation: 'rocketMotion3 5s ease-in-out infinite' }}>K</span>
                   {' '}Science
                 </span>
                 <span className="block text-5xl md:text-7xl italic" style={{ color: '#c8ff2e' }}>Fair</span>
@@ -529,12 +529,16 @@ function RankBadge({ rank, isLeader, color }) {
 
 function TightRacesPanel({ races }) {
   return (
-    <div className="rounded-2xl p-5 border border-white/10" style={{ background: 'rgba(255,94,184,0.05)' }}>
+    <div className="rounded-2xl p-5 border-2 border-[#ff5eb8]" style={{ 
+      background: 'linear-gradient(135deg, rgba(255,94,184,0.15), rgba(255,122,107,0.1))',
+      boxShadow: '0 0 30px rgba(255,94,184,0.3), inset 0 0 20px rgba(255,94,184,0.1)'
+    }}>
       <div className="flex items-center gap-2 mb-4">
-        <Flame size={16} style={{ color: '#ff5eb8' }} />
+        <Flame size={18} style={{ color: '#ff5eb8', animation: 'flameBurn 0.8s ease-in-out infinite' }} />
         <h3 style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.2em] text-[#ff5eb8]">
-          Tight Races
+          🔥 Tight Races
         </h3>
+        <Flame size={16} style={{ color: '#ff7a6b', animation: 'flameBurn 0.6s ease-in-out infinite 0.2s' }} />
       </div>
       {races.length === 0 ? (
         <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-sm text-white/40">
@@ -543,20 +547,46 @@ function TightRacesPanel({ races }) {
       ) : (
         <div className="space-y-3">
           {races.slice(0, 3).map(([a, b, diff], i) => (
-            <div key={i} className="flex items-center gap-2">
+            <div key={i} className="flex items-center gap-2 p-3 rounded-lg transition-all duration-300"
+              style={{
+                background: 'rgba(255,94,184,0.1)',
+                border: '1px solid rgba(255,94,184,0.3)',
+                boxShadow: '0 0 15px rgba(255,94,184,0.2)',
+                animation: `raceFlare 2s ease-in-out infinite ${i * 0.3}s`
+              }}>
               <div className="flex-1 min-w-0">
-                <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-white text-sm truncate">{a.emoji} {a.title}</div>
-                <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-white/60 text-sm truncate mt-0.5">{b.emoji} {b.title}</div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-white text-sm truncate">
+                  {a.emoji} <span style={{ color: '#ff5eb8' }}>{a.title}</span>
+                </div>
+                <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-white/60 text-sm truncate mt-0.5">
+                  {b.emoji} {b.title}
+                </div>
               </div>
               <div className="flex-shrink-0 text-right">
-                <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-[#ff5eb8]">
-                  {diff === 0 ? 'TIED' : `+${diff}`}
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', color: '#ff5eb8' }} 
+                  className={`text-xs font-bold transition-transform ${diff === 0 ? 'animate-pulse' : ''}`}
+                  style={{ animation: `diffFlare ${1 + diff * 0.2}s ease-in-out infinite` }}>
+                  {diff === 0 ? '🔥 TIED 🔥' : `+${diff}`}
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+      <style>{`
+        @keyframes flameBurn {
+          0%, 100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+          50% { transform: scaleY(1.2) scaleX(0.95); opacity: 0.8; }
+        }
+        @keyframes raceFlare {
+          0%, 100% { box-shadow: 0 0 15px rgba(255,94,184,0.2); }
+          50% { box-shadow: 0 0 25px rgba(255,94,184,0.5), inset 0 0 15px rgba(255,122,107,0.2); }
+        }
+        @keyframes diffFlare {
+          0%, 100% { transform: scale(1); color: #ff5eb8; }
+          50% { transform: scale(1.1); color: #ff7a6b; }
+        }
+      `}</style>
     </div>
   );
 }
