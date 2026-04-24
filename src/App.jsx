@@ -386,14 +386,37 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                 </span>
               </div>
               <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
-                <span className="block text-5xl md:text-7xl">
+                <span className="block text-5xl md:text-7xl relative">
                   <span style={{ display: 'inline-block', animation: 'rocketMotion0 5s ease-in-out infinite' }}>B</span>
-                  <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion1 5s ease-in-out infinite' }}>1</span>
+                  <span 
+                    style={{ 
+                      color: '#c8ff2e', 
+                      display: 'inline-block', 
+                      animation: 'rocketShoot 5s ease-in infinite',
+                      position: 'relative',
+                      textShadow: '0 0 20px #c8ff2e'
+                    }}
+                  >
+                    1
+                    <span 
+                      style={{
+                        position: 'absolute',
+                        bottom: '-8px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '8px',
+                        height: '12px',
+                        background: 'linear-gradient(to bottom, #ff7a6b, #ff5eb8)',
+                        borderRadius: '4px 4px 0 0',
+                        animation: 'rocketFlame 0.3s ease-in infinite',
+                        boxShadow: '0 0 10px #ff5eb8'
+                      }}
+                    />
+                  </span>
                   <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion2 5s ease-in-out infinite' }}>5</span>
                   <span style={{ display: 'inline-block', animation: 'rocketMotion3 5s ease-in-out infinite' }}>K</span>
-                  {' '}Science
+                  {' '}Science Fair
                 </span>
-                <span className="block text-5xl md:text-7xl italic" style={{ color: '#c8ff2e' }}>Fair</span>
               </h1>
             </div>
           </div>
@@ -1495,17 +1518,55 @@ export default function App() {
           100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
         }
         
-        @keyframes rocketMotion1 {
-          0% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
-          12% { transform: translateY(-3px) rotateZ(1deg) scaleY(1.06); }
-          22% { transform: translateY(-5px) rotateZ(-2deg) scaleY(0.97); }
-          32% { transform: translateY(-10px) rotateZ(2deg) scaleY(1.03); }
-          42% { transform: translateY(-28px) rotateZ(-3deg) scaleY(0.94); }
-          52% { transform: translateY(-38px) rotateZ(2deg) scaleY(1); }
-          62% { transform: translateY(-30px) rotateZ(-1deg) scaleY(1.01); }
-          72% { transform: translateY(-16px) rotateZ(1deg) scaleY(0.99); }
-          82% { transform: translateY(-6px) rotateZ(-1deg) scaleY(1.02); }
-          100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+        @keyframes rocketShoot {
+          0% { 
+            transform: translateY(0) scaleY(1) rotateZ(0deg); 
+            opacity: 1;
+            filter: brightness(1);
+          }
+          10% { 
+            transform: translateY(-8px) scaleY(1.1) rotateZ(-2deg); 
+            opacity: 1;
+            filter: brightness(1.2);
+          }
+          25% { 
+            transform: translateY(-40px) scaleY(0.9) rotateZ(1deg); 
+            opacity: 1;
+            filter: brightness(1.4);
+          }
+          40% { 
+            transform: translateY(-120px) scaleY(0.8) rotateZ(-1deg); 
+            opacity: 1;
+            filter: brightness(1.3);
+          }
+          60% { 
+            transform: translateY(-300px) scaleY(0.7) rotateZ(2deg); 
+            opacity: 0.8;
+            filter: brightness(1);
+          }
+          85% { 
+            transform: translateY(-600px) scaleY(0.5) rotateZ(-3deg); 
+            opacity: 0;
+            filter: brightness(0.8);
+          }
+          100% { 
+            transform: translateY(0) scaleY(1) rotateZ(0deg); 
+            opacity: 1;
+            filter: brightness(1);
+          }
+        }
+        
+        @keyframes rocketFlame {
+          0%, 100% { 
+            height: 12px; 
+            opacity: 0.8;
+            boxShadow: 0 0 10px #ff5eb8;
+          }
+          50% { 
+            height: 16px; 
+            opacity: 1;
+            boxShadow: 0 0 20px #ff5eb8, 0 0 10px #ff7a6b;
+          }
         }
         
         @keyframes rocketMotion2 {
