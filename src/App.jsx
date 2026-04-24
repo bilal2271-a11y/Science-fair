@@ -481,9 +481,9 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
           <StatPill label="Leader" value={sortedProjects[0]?.title.slice(0, 18) || '—'} mono={false} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_380px] gap-4 sm:gap-6 md:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_400px] gap-6 sm:gap-8 md:gap-10">
           {/* Leaderboard */}
-          <div className="space-y-2 sm:space-y-3 md:space-y-4">
+          <div className="space-y-4 sm:space-y-5 md:space-y-6 lg:space-y-7">
             {sortedProjects.map((p, idx) => {
               const count = voteCount[p.id] || 0;
               const pct = (count / maxBar) * 100;
@@ -552,7 +552,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                       borderRight: isLeader ? `2px solid #ff6666` : `2px solid ${c.hex}`,
                     }} />
 
-                  <div className="relative flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-5 p-3 sm:p-4 md:p-5 lg:p-6">
+                  <div className="relative flex items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 p-4 sm:p-5 md:p-6 lg:p-7">
                     {/* Rank with podium styling - hidden on small mobile */}
                     <div className="hidden xs:flex flex-shrink-0 w-12 sm:w-14 md:w-16 h-16 sm:h-18 md:h-20 items-center justify-center relative">
                       <RankBadge rank={idx + 1} isLeader={isLeader} color={c} />
@@ -564,7 +564,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                     </div>
 
                     {/* Emoji + info */}
-                    <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
+                    <div className="flex items-center gap-3 sm:gap-4 md:gap-5 flex-1 min-w-0">
                       <div className="text-3xl sm:text-4xl md:text-5xl flex-shrink-0 w-10 sm:w-12 md:w-14 lg:w-16 h-10 sm:h-12 md:h-14 lg:h-16 flex items-center justify-center rounded-lg sm:rounded-xl"
                         style={{ 
                           background: c.soft, 
@@ -604,7 +604,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
           </div>
 
           {/* Side panel */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <TightRacesPanel races={tightRaces} />
             <RecentVotesPanel votes={recentVotes} projects={projects} tick={tick} />
           </div>
@@ -643,25 +643,25 @@ function RankBadge({ rank, isLeader, color }) {
 
 function TightRacesPanel({ races }) {
   return (
-    <div className="rounded-xl sm:rounded-2xl p-4 sm:p-5 border-2 border-[#ff5eb8]" style={{ 
+    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border-2 border-[#ff5eb8]" style={{ 
       background: 'linear-gradient(135deg, rgba(255,94,184,0.15), rgba(255,122,107,0.1))',
       boxShadow: '0 0 30px rgba(255,94,184,0.3), inset 0 0 20px rgba(255,94,184,0.1)'
     }}>
-      <div className="flex items-center gap-2 mb-3 sm:mb-4">
-        <Flame size={14} className="sm:size-18" style={{ color: '#ff5eb8', animation: 'flameBurn 0.8s ease-in-out infinite' }} />
-        <h3 style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[9px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[#ff5eb8]">
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 md:mb-6">
+        <Flame size={16} className="sm:size-20 flex-shrink-0" style={{ color: '#ff5eb8', animation: 'flameBurn 0.8s ease-in-out infinite' }} />
+        <h3 style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#ff5eb8]">
           🔥 Tight Races
         </h3>
-        <Flame size={12} className="sm:size-14" style={{ color: '#ff7a6b', animation: 'flameBurn 0.6s ease-in-out infinite 0.2s' }} />
+        <Flame size={14} className="sm:size-16 flex-shrink-0" style={{ color: '#ff7a6b', animation: 'flameBurn 0.6s ease-in-out infinite 0.2s' }} />
       </div>
       {races.length === 0 ? (
         <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/40">
           No close competitions yet. Let the votes flow.
         </p>
       ) : (
-        <div className="space-y-2 sm:space-y-3">
+        <div className="space-y-3 sm:space-y-4">
           {races.slice(0, 3).map(([a, b, diff], i) => (
-            <div key={i} className="flex items-center gap-2 p-2.5 sm:p-3 rounded-lg transition-all duration-300"
+            <div key={i} className="flex items-center gap-3 p-3 sm:p-4 rounded-lg transition-all duration-300"
               style={{
                 background: 'rgba(255,94,184,0.1)',
                 border: '1px solid rgba(255,94,184,0.3)',
@@ -707,27 +707,27 @@ function TightRacesPanel({ races }) {
 
 function RecentVotesPanel({ votes, projects, tick }) {
   return (
-    <div className="rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/10" style={{ background: 'rgba(94,234,255,0.04)' }}>
-      <div className="flex items-center gap-2 mb-3 sm:mb-4">
-        <Radio size={14} className="sm:size-16" style={{ color: '#5eeaff' }} />
-        <h3 style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[9px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[#5eeaff]">
+    <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border border-white/10" style={{ background: 'rgba(94,234,255,0.04)' }}>
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5 md:mb-6">
+        <Radio size={16} className="sm:size-18 flex-shrink-0" style={{ color: '#5eeaff' }} />
+        <h3 style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#5eeaff]">
           Vote Stream
         </h3>
         <div className="flex-1" />
-        <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-[#5eeaff] animate-pulse" />
+        <div className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full bg-[#5eeaff] animate-pulse flex-shrink-0" />
       </div>
       {votes.length === 0 ? (
         <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/40">
           Waiting for the first vote...
         </p>
       ) : (
-        <div className="space-y-1.5 sm:space-y-2 max-h-[280px] sm:max-h-[380px] overflow-y-auto pr-1">
+        <div className="space-y-2.5 sm:space-y-3 max-h-[280px] sm:max-h-[380px] overflow-y-auto pr-1">
           {votes.map((v, i) => {
             const proj = projects.find(p => p.id === v.projectId);
             if (!proj) return null;
             const c = colorOf(proj.color);
             return (
-              <div key={v.timestamp + '-' + i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-2.5 rounded-lg"
+              <div key={v.timestamp + '-' + i} className="flex items-center gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-lg"
                 style={{ background: 'rgba(255,255,255,0.02)', animation: i === 0 ? 'slideIn 0.4s ease-out' : 'none' }}>
                 <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full flex-shrink-0" style={{ background: c.hex, boxShadow: `0 0 8px ${c.glow}` }} />
                 <div className="text-base sm:text-lg">{proj.emoji}</div>
@@ -829,7 +829,7 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
           {projects.map((p) => {
             const c = colorOf(p.color);
             const count = voteCount[p.id] || 0;
@@ -944,39 +944,39 @@ function QRView({ projects }) {
   return (
     <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 sm:gap-4 flex-wrap">
+        <div className="mb-8 sm:mb-10 md:mb-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-6 flex-wrap">
           <div className="flex-1">
-            <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#5eeaff] mb-1 sm:mb-2">
+            <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#5eeaff] mb-2 sm:mb-3">
               ◆ Print & place
             </div>
-            <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-3xl sm:text-4xl md:text-5xl text-white leading-none">
+            <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-none">
               Scan-to-vote QR codes
             </h1>
-            <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/50 mt-2 sm:mt-3 max-w-xl">
+            <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/50 mt-3 sm:mt-4 max-w-xl">
               Print these and place one at each project's poster. Attendees scan to land on the voting page.
             </p>
           </div>
           <button onClick={() => window.print()}
-            className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-white text-black font-medium hover:scale-105 transition text-sm flex-shrink-0"
+            className="flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-white text-black font-medium hover:scale-105 transition text-sm flex-shrink-0"
             style={{ fontFamily: 'Inter Tight, sans-serif' }}>
-            <Printer size={14} className="sm:size-16" /> Print
+            <Printer size={16} className="sm:size-18" /> Print
           </button>
         </div>
 
-        <div className="rounded-lg sm:rounded-xl p-3 sm:p-4 mb-6 sm:mb-8 flex items-start gap-2 sm:gap-3" style={{ background: 'rgba(255,200,87,0.06)', border: '1px solid rgba(255,200,87,0.2)' }}>
-          <Info size={14} className="sm:size-16 text-[#ffc857] flex-shrink-0 mt-0.5" />
-          <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-[10px] sm:text-sm text-white/70">
-            <strong className="text-[#ffc857]">Demo note:</strong> these QRs encode this artifact's URL, which only works inside Claude. For a real science fair, deploy the app to a public URL (Vercel/Netlify/etc.) and regenerate codes — the code here will do that automatically off <code className="text-white/90" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.7em' }}>window.location</code>.
+        <div className="rounded-lg sm:rounded-xl p-4 sm:p-5 mb-8 sm:mb-10 flex items-start gap-3 sm:gap-4" style={{ background: 'rgba(255,200,87,0.06)', border: '1px solid rgba(255,200,87,0.2)' }}>
+          <Info size={16} className="sm:size-18 text-[#ffc857] flex-shrink-0 mt-0.5" />
+          <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/70">
+            <strong className="text-[#ffc857]">Demo note:</strong> these QRs encode this artifact's URL, which only works inside Claude. For a real science fair, deploy the app to a public URL (Vercel/Netlify/etc.) and regenerate codes — the code here will do that automatically off <code className="text-white/90" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '0.8em' }}>window.location</code>.
           </p>
         </div>
 
         {projects.length === 0 ? (
-          <div className="text-center py-12 sm:py-20">
-            <QrCode size={32} className="sm:size-48 text-white/20 mx-auto mb-3 sm:mb-4" />
-            <p style={{ fontFamily: 'Fraunces, serif' }} className="text-sm sm:text-xl text-white/50">Add projects to generate QR codes.</p>
+          <div className="text-center py-16 sm:py-24">
+            <QrCode size={40} className="sm:size-56 text-white/20 mx-auto mb-4 sm:mb-6" />
+            <p style={{ fontFamily: 'Fraunces, serif' }} className="text-base sm:text-2xl text-white/50">Add projects to generate QR codes.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6 print:grid-cols-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 print:grid-cols-2">
             {projects.map((p) => {
               const c = colorOf(p.color);
               return (
@@ -1041,33 +1041,33 @@ function AdminView({ projects, votes, voteCount, addProject, deleteProject, rese
   return (
     <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 sm:gap-4 flex-wrap">
+        <div className="mb-8 sm:mb-10 md:mb-12 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-6 flex-wrap">
           <div>
-            <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#ff5eb8] mb-1 sm:mb-2">
+            <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#ff5eb8] mb-2 sm:mb-3">
               ◆ Event console
             </div>
-            <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-3xl sm:text-4xl md:text-5xl text-white leading-none">
+            <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-none">
               Manage projects.
             </h1>
           </div>
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-0 px-2 sm:px-3 py-2 rounded-full bg-white/5 border border-white/10">
-            <ShieldCheck size={12} className="sm:size-14 text-[#c8ff2e]" />
-            <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs text-white/70">{adminEmail}</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-white/5 border border-white/10">
+            <ShieldCheck size={16} className="sm:size-18 text-[#c8ff2e] flex-shrink-0" />
+            <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs sm:text-sm text-white/70">{adminEmail}</span>
             <button onClick={signOut}
-              className="mt-2 sm:mt-0 sm:ml-2 flex items-center gap-1 text-[10px] sm:text-xs text-white/50 hover:text-[#ff7a6b] transition"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm text-white/50 hover:text-[#ff7a6b] transition rounded-lg hover:bg-white/5"
               style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-              <LogOut size={10} className="sm:size-12" /> Sign out
+              <LogOut size={14} className="sm:size-16 flex-shrink-0" /> Sign out
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] xl:grid-cols-[420px_1fr] gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] xl:grid-cols-[420px_1fr] gap-6 sm:gap-8">
           {/* Add form */}
-          <div className="rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-            <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-lg sm:text-2xl text-white mb-3 sm:mb-5 flex items-center gap-2">
-              <Plus size={16} className="sm:size-20" /> Add project
+          <div className="rounded-xl sm:rounded-2xl p-5 sm:p-6 md:p-7 border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+            <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-xl sm:text-2xl md:text-3xl text-white mb-4 sm:mb-6 flex items-center gap-2">
+              <Plus size={18} className="sm:size-22 flex-shrink-0" /> Add project
             </h2>
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-4 sm:space-y-5">
               <Field label="Project title" value={form.title} onChange={v => setForm({ ...form, title: v })} placeholder="e.g. Solar-Powered Water Purifier" />
               <Field label="Student name" value={form.student} onChange={v => setForm({ ...form, student: v })} placeholder="e.g. Maya Kapoor" />
               <Field label="Grade" value={form.grade} onChange={v => setForm({ ...form, grade: v })} placeholder="e.g. 8" />
@@ -1107,47 +1107,48 @@ function AdminView({ projects, votes, voteCount, addProject, deleteProject, rese
 
           {/* List */}
           <div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4 mb-3 sm:mb-4">
-              <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-lg sm:text-2xl text-white">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-6 mb-5 sm:mb-6 md:mb-7">
+              <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-xl sm:text-2xl md:text-3xl text-white">
                 Active projects
-                <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs sm:text-sm text-white/40 ml-2 sm:ml-3">{projects.length}</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs sm:text-sm text-white/40 ml-3 sm:ml-4">{projects.length}</span>
               </h2>
               {(projects.length > 0 || votes.length > 0) && (
-                <button onClick={resetAll} className="flex items-center gap-1 text-[10px] sm:text-xs text-white/50 hover:text-[#ff7a6b] transition px-2 sm:px-3 py-1.5 rounded-full border border-white/10 flex-shrink-0"
+                <button onClick={resetAll} className="flex items-center gap-2 text-xs sm:text-sm text-white/50 hover:text-[#ff7a6b] transition px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border border-white/10 flex-shrink-0 hover:bg-white/5"
                   style={{ fontFamily: 'JetBrains Mono, monospace' }}>
-                  <RotateCcw size={10} className="sm:size-12" /> Reset event
+                  <RotateCcw size={14} className="sm:size-16 flex-shrink-0" /> Reset event
                 </button>
               )}
             </div>
 
             {projects.length === 0 ? (
-              <div className="rounded-xl sm:rounded-2xl p-6 sm:p-12 text-center border border-dashed border-white/10">
-                <p style={{ fontFamily: 'Fraunces, serif' }} className="text-white/40 text-sm sm:text-lg italic">No projects added yet.</p>
+              <div className="rounded-xl sm:rounded-2xl p-8 sm:p-12 md:p-16 text-center border border-dashed border-white/10">
+                <p style={{ fontFamily: 'Fraunces, serif' }} className="text-white/40 text-base sm:text-lg md:text-xl italic">No projects added yet.</p>
               </div>
             ) : (
-              <div className="space-y-1 sm:space-y-2">
+              <div className="space-y-2.5 sm:space-y-3 md:space-y-4">
                 {projects.map(p => {
                   const c = colorOf(p.color);
                   const count = voteCount[p.id] || 0;
                   return (
-                    <div key={p.id} className="rounded-lg sm:rounded-xl p-3 sm:p-4 flex items-center gap-2 sm:gap-4"
-                      style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${c.hex}22` }}>
-                      <div className="text-xl sm:text-2xl flex-shrink-0">{p.emoji}</div>
+                    <div key={p.id} className="rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 flex items-center gap-3 sm:gap-5 md:gap-6"
+                      style={{ background: 'rgba(255,255,255,0.025)', border: `1px solid ${c.hex}33` }}>
+                      <div className="text-2xl sm:text-3xl flex-shrink-0">{p.emoji}</div>
                       <div className="flex-1 min-w-0">
-                        <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-sm sm:text-base text-white truncate">{p.title}</div>
-                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs text-white/50 truncate">
+                        <div style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-base sm:text-lg md:text-xl text-white truncate">{p.title}</div>
+                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs sm:text-sm text-white/50 truncate mt-0.5">
                           {p.student} · Grade {p.grade}
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div style={{ fontFamily: 'JetBrains Mono, monospace', color: c.hex }} className="text-base sm:text-lg font-bold">{count}</div>
-                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[8px] sm:text-[9px] uppercase tracking-widest text-white/40">
+                        <div style={{ fontFamily: 'JetBrains Mono, monospace', color: c.hex }} className="text-lg sm:text-xl md:text-2xl font-bold">{count}</div>
+                        <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[9px] sm:text-[10px] uppercase tracking-widest text-white/40 mt-0.5">
                           {count === 1 ? 'vote' : 'votes'}
                         </div>
                       </div>
                       <button onClick={() => confirm(`Delete "${p.title}"?`) && deleteProject(p.id)}
-                        className="text-white/30 hover:text-[#ff7a6b] transition p-1.5 sm:p-2 flex-shrink-0">
-                        <Trash2 size={14} className="sm:size-16" />
+                        className="text-white/30 hover:text-[#ff7a6b] transition p-2 sm:p-2.5 flex-shrink-0 hover:bg-white/5 rounded-lg"
+                        title="Delete project">
+                        <Trash2 size={16} className="sm:size-18" />
                       </button>
                     </div>
                   );
@@ -1158,9 +1159,9 @@ function AdminView({ projects, votes, voteCount, addProject, deleteProject, rese
         </div>
 
         {/* How it works */}
-        <div className="mt-6 sm:mt-10 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-white/10" style={{ background: 'rgba(255,255,255,0.02)' }}>
-          <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-lg sm:text-xl text-white mb-3 sm:mb-4">How it works</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
+        <div className="mt-10 sm:mt-14 md:mt-16 rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10 border border-white/10" style={{ background: 'rgba(255,255,255,0.02)' }}>
+          <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-xl sm:text-2xl md:text-3xl text-white mb-6 sm:mb-8 md:mb-10">How it works</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 text-sm sm:text-base" style={{ fontFamily: 'Inter Tight, sans-serif' }}>
             <Step n="01" title="Add projects">
               Enter each project's title, student name, and grade in the Admin panel.
             </Step>
