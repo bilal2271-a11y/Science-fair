@@ -415,7 +415,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                   </span>
                   <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion2 5s ease-in-out infinite' }}>5</span>
                   <span style={{ display: 'inline-block', animation: 'rocketMotion3 5s ease-in-out infinite' }}>K</span>
-                  {' '}Science Fair
+                  {' '}Fair Science
                 </span>
               </h1>
             </div>
@@ -442,23 +442,60 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                   key={p.id}
                   className="relative rounded-2xl overflow-hidden transition-all duration-700"
                   style={{
-                    background: flashing ? c.soft : 'rgba(255,255,255,0.025)',
-                    border: `2px solid ${flashing ? c.hex : 'rgba(255,255,255,0.06)'}`,
-                    boxShadow: flashing 
+                    background: isLeader 
+                      ? 'linear-gradient(90deg, rgba(255,255,255,0.025) 0%, rgba(255,122,107,0.15) 100%)'
+                      : flashing ? c.soft : 'rgba(255,255,255,0.025)',
+                    border: isLeader 
+                      ? '2px solid #ff4444'
+                      : `2px solid ${flashing ? c.hex : 'rgba(255,255,255,0.06)'}`,
+                    boxShadow: isLeader
+                      ? `0 0 60px rgba(255,68,68,0.6), inset 0 0 30px rgba(255,122,107,0.3), inset 40px 0 60px rgba(255,68,68,0.2)`
+                      : flashing 
                       ? `0 0 60px ${c.glow}, inset 0 0 40px ${c.glow}` 
-                      : isLeader
-                      ? `0 0 40px rgba(200,255,46,0.3), inset 0 0 20px rgba(200,255,46,0.1)`
                       : 'none',
                     transform: flashing ? 'scale(1.008)' : 'scale(1)',
-                    animation: `slideIn${idx} 0.6s ease-out ${idx * 0.08}s both`,
+                    animation: isLeader ? `flameWaveLeft 3s ease-in-out infinite` : `slideIn${idx} 0.6s ease-out ${idx * 0.08}s both`,
                   }}
                 >
+                  {/* Flame particles from right for leader */}
+                  {isLeader && (
+                    <>
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '0',
+                          right: '0',
+                          width: '100%',
+                          height: '100%',
+                          background: 'linear-gradient(90deg, transparent 0%, rgba(255,68,68,0.3) 50%, transparent 100%)',
+                          animation: 'flamesInFromRight 2s ease-in infinite',
+                          pointerEvents: 'none',
+                          borderRadius: '2xl'
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          right: '0',
+                          width: '80px',
+                          height: '40%',
+                          background: 'radial-gradient(ellipse at right center, rgba(255,122,107,0.6), transparent)',
+                          animation: 'flamesWaveRight 2.5s ease-in-out infinite 0.3s',
+                          pointerEvents: 'none',
+                          transform: 'translateY(-50%)'
+                        }}
+                      />
+                    </>
+                  )}
                   {/* progress bar fill */}
                   <div className="absolute inset-y-0 left-0 transition-all duration-1000 ease-out"
                     style={{
                       width: `${pct}%`,
-                      background: `linear-gradient(90deg, ${c.hex}44 0%, ${c.hex}12 100%)`,
-                      borderRight: `2px solid ${c.hex}`,
+                      background: isLeader
+                        ? `linear-gradient(90deg, rgba(255,68,68,0.6) 0%, rgba(255,122,107,0.3) 100%)`
+                        : `linear-gradient(90deg, ${c.hex}44 0%, ${c.hex}12 100%)`,
+                      borderRight: isLeader ? `2px solid #ff6666` : `2px solid ${c.hex}`,
                     }} />
 
                   <div className="relative flex items-center gap-5 p-6">
@@ -1566,6 +1603,43 @@ export default function App() {
             height: 16px; 
             opacity: 1;
             boxShadow: 0 0 20px #ff5eb8, 0 0 10px #ff7a6b;
+          }
+        }
+        
+        @keyframes flameWaveLeft {
+          0%, 100% { 
+            boxShadow: 0 0 40px rgba(255,68,68,0.4), inset 0 0 20px rgba(255,122,107,0.1);
+          }
+          50% { 
+            boxShadow: 0 0 80px rgba(255,68,68,0.8), inset 0 0 40px rgba(255,122,107,0.3), inset 60px 0 80px rgba(255,68,68,0.3);
+          }
+        }
+        
+        @keyframes flamesInFromRight {
+          0% { 
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          30% {
+            opacity: 0.6;
+          }
+          70% {
+            opacity: 0.3;
+          }
+          100% { 
+            transform: translateX(-100%);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes flamesWaveRight {
+          0%, 100% { 
+            transform: translateY(-50%) translateX(0);
+            opacity: 0.3;
+          }
+          50% { 
+            transform: translateY(-50%) translateX(-40px);
+            opacity: 0.8;
           }
         }
         
