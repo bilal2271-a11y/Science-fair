@@ -365,7 +365,7 @@ function Nav({ view, setView, totalVotes }) {
 // ============================================================================
 // DISPLAY VIEW — big screen leaderboard
 // ============================================================================
-function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, tightRaces, lastVoteFlash }) {
+function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, tightRaces, lastVoteFlash, justAutoVoted }) {
   const topVotes = sortedProjects[0] ? voteCount[sortedProjects[0].id] || 0 : 0;
   const maxBar = Math.max(topVotes, 1);
   const [tick, setTick] = useState(0);
@@ -394,6 +394,21 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
 
   return (
     <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6">
+      {/* Auto-vote confirmation banner */}
+      {justAutoVoted && (
+        <div className="mb-6 sm:mb-8 mx-auto max-w-[1600px] rounded-lg sm:rounded-2xl p-4 sm:p-6 border border-[#c8ff2e] flex items-start gap-3 sm:gap-4 animate-pulse"
+          style={{ background: 'rgba(200,255,46,0.15)', boxShadow: '0 0 30px rgba(200,255,46,0.3)' }}>
+          <div className="text-2xl sm:text-4xl flex-shrink-0">✓</div>
+          <div className="flex-1">
+            <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500 }} className="text-lg sm:text-2xl text-[#c8ff2e] mb-1">
+              Your vote has been locked in!
+            </h2>
+            <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/70">
+              Thank you for voting. Your choice is recorded and counted in the leaderboard below.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="max-w-[1600px] mx-auto">
         {/* Header with BISK Logo */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-8 mb-8 sm:mb-12">
@@ -978,7 +993,7 @@ function QRView({ projects }) {
                     {p.student} · Grade {p.grade}
                   </p>
                   <div className="rounded-lg sm:rounded-xl p-2 sm:p-3 flex items-center justify-center" style={{ background: '#0a0a14', border: `1px solid ${c.hex}22` }}>
-                    <img src={qrUrl(voteUrl + '?p=' + p.id, 220)} alt="QR code" className="w-full h-auto max-w-[160px] sm:max-w-[200px]" />
+                    <img src={qrUrl(voteUrl + '?p=' + p.id + '&autoVote=true', 220)} alt="QR code" className="w-full h-auto max-w-[160px] sm:max-w-[200px]" />
                   </div>
                   <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[9px] sm:text-[10px] uppercase tracking-widest text-white/40 text-center mt-2 sm:mt-3">
                     Scan to vote
@@ -1285,6 +1300,7 @@ export default function App() {
   const [voterId, setVoterId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastVoteFlash, setLastVoteFlash] = useState(null);
+  const [justAutoVoted, setJustAutoVoted] = useState(false);
   const votesRef = useRef([]);
 
   // Auth state for admin
@@ -1295,7 +1311,8 @@ export default function App() {
 
   // ----- Initial load: voter ID, projects, votes, auth session -----
   useEffect(() => {
-    setVoterId(getOrCreateVoterId());
+    const voterId = getOrCreateVoterId();
+    setVoterId(voterId);
 
     (async () => {
       const [p, v, sessionRes] = await Promise.all([
@@ -1307,6 +1324,34 @@ export default function App() {
       setVotes(v);
       votesRef.current = v;
       setSession(sessionRes.data.session);
+
+      // Check for auto-vote parameter from QR code
+      const params = new URLSearchParams(window.location.search);
+      const projectId = params.get('p');
+      const autoVote = params.get('autoVote') === 'true';
+      
+      if (projectId && autoVote && !v.some(vote => vote.voterId === voterId)) {
+        // Auto-cast vote via database
+        await db.castVote(projectId, voterId);
+        
+        // Fetch updated votes
+        const updatedVotes = await db.fetchVotes();
+        setVotes(updatedVotes);
+        votesRef.current = updatedVotes;
+        
+        // Show display view with vote confirmation
+        setView('display');
+        setJustAutoVoted(true);
+        setLastVoteFlash(projectId);
+        setTimeout(() => {
+          setLastVoteFlash(null);
+          setTimeout(() => setJustAutoVoted(false), 3000);
+        }, 2000);
+        
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
       setLoading(false);
     })();
 
@@ -1538,6 +1583,7 @@ export default function App() {
           recentVotes={recentVotes}
           tightRaces={tightRaces}
           lastVoteFlash={lastVoteFlash}
+          justAutoVoted={justAutoVoted}
         />
       )}
       {view === 'vote' && (
