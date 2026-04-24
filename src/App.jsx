@@ -410,9 +410,9 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
         </div>
       )}
       <div className="max-w-[1600px] mx-auto">
-        {/* Header with BISK Logo */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 sm:gap-8 mb-8 sm:mb-12">
-          <div className="flex items-end gap-3 sm:gap-8 flex-wrap">
+        {/* Header with BISK Logo and Biskonaut */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
+          <div className="flex items-end gap-3 sm:gap-6 md:gap-8 flex-wrap">
             {/* BISK Logo - Responsive */}
             <div className="relative flex-shrink-0">
               <div className="w-20 sm:w-28 md:w-[140px] h-20 sm:h-28 md:h-[140px] rounded-2xl sm:rounded-3xl p-2 sm:p-4 flex items-center justify-center"
@@ -429,6 +429,21 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                 />
               </div>
               <OrbitingElectrons className="hidden sm:block w-32 sm:w-48 md:w-[220px] h-32 sm:h-48 md:h-[220px] -top-8 sm:-top-10 -left-8 sm:-left-10" />
+            </div>
+
+            {/* Biskonaut Astronaut Icon */}
+            <div className="hidden sm:flex flex-shrink-0 w-24 sm:w-32 md:w-40 h-24 sm:h-32 md:h-40 rounded-2xl sm:rounded-3xl p-2 sm:p-3 md:p-4 flex items-center justify-center overflow-hidden"
+              style={{
+                background: 'linear-gradient(135deg, rgba(94,234,255,0.15), rgba(200,255,46,0.1))',
+                border: '2px solid rgba(94,234,255,0.3)',
+                boxShadow: '0 0 40px rgba(94,234,255,0.2), inset 0 0 20px rgba(94,234,255,0.1)'
+              }}>
+              <img 
+                src="/biskonaut.png"
+                alt="Biskonaut Astronaut"
+                className="w-full h-full object-cover"
+                style={{ animation: 'float 3s ease-in-out infinite', filter: 'drop-shadow(0 0 20px rgba(94,234,255,0.4))' }}
+              />
             </div>
             
             <div className="flex-1">
@@ -1625,6 +1640,11 @@ export default function App() {
         @keyframes logoFloat {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          50% { transform: translateY(-12px) scale(1.02); }
         }
         
         @keyframes rocketMotion0 {
