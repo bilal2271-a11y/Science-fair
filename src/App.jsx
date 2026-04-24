@@ -392,7 +392,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                     style={{ 
                       color: '#1a3a70', 
                       display: 'inline-block', 
-                      animation: 'rocketShootSlow 8s ease-in infinite',
+                      animation: 'parabolaPath 8s ease-in-out infinite',
                       position: 'relative',
                       textShadow: '0 0 10px rgba(26,58,112,0.5)'
                     }}
@@ -401,15 +401,16 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                     <span 
                       style={{
                         position: 'absolute',
-                        bottom: '-8px',
+                        bottom: '-12px',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        width: '8px',
-                        height: '12px',
-                        background: 'linear-gradient(to bottom, #ff7a6b, #ff5eb8)',
-                        borderRadius: '4px 4px 0 0',
-                        animation: 'rocketFlame 0.3s ease-in infinite',
-                        boxShadow: '0 0 10px #ff5eb8'
+                        width: '12px',
+                        height: '16px',
+                        background: 'linear-gradient(to bottom, #ff9933, #ff6600)',
+                        borderRadius: '6px 6px 0 0',
+                        animation: 'flameGlow 0.4s ease-in-out infinite',
+                        boxShadow: '0 0 20px #ff6600, 0 0 40px rgba(255,102,0,0.8)',
+                        filter: 'drop-shadow(0 0 10px #ff9933)'
                       }}
                     />
                   </span>
@@ -1555,54 +1556,57 @@ export default function App() {
           100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
         }
         
-        @keyframes rocketShootSlow {
+        @keyframes parabolaPath {
           0% { 
-            transform: translateY(0) scaleY(1) rotateZ(0deg); 
+            transform: translateX(0) translateY(0) rotateZ(0deg); 
             opacity: 1;
-            filter: brightness(1);
           }
-          10% { 
-            transform: translateY(-8px) scaleY(1.1) rotateZ(-2deg); 
+          12% { 
+            transform: translateX(30px) translateY(-20px) rotateZ(15deg); 
             opacity: 1;
-            filter: brightness(1.2);
           }
-          20% { 
-            transform: translateY(-40px) scaleY(0.9) rotateZ(1deg); 
+          25% { 
+            transform: translateX(60px) translateY(-50px) rotateZ(30deg); 
             opacity: 1;
-            filter: brightness(1.4);
           }
-          35% { 
-            transform: translateY(-120px) scaleY(0.8) rotateZ(-1deg); 
+          37% { 
+            transform: translateX(40px) translateY(-70px) rotateZ(20deg); 
             opacity: 1;
-            filter: brightness(1.3);
           }
-          55% { 
-            transform: translateY(-300px) scaleY(0.7) rotateZ(2deg); 
-            opacity: 0.8;
-            filter: brightness(1);
+          50% { 
+            transform: translateX(0) translateY(-60px) rotateZ(0deg); 
+            opacity: 1;
           }
-          80% { 
-            transform: translateY(-600px) scaleY(0.5) rotateZ(-3deg); 
-            opacity: 0;
-            filter: brightness(0.8);
+          62% { 
+            transform: translateX(-40px) translateY(-45px) rotateZ(-20deg); 
+            opacity: 1;
+          }
+          75% { 
+            transform: translateX(-55px) translateY(-20px) rotateZ(-25deg); 
+            opacity: 1;
+          }
+          87% { 
+            transform: translateX(-25px) translateY(-10px) rotateZ(-10deg); 
+            opacity: 1;
           }
           100% { 
-            transform: translateY(0) scaleY(1) rotateZ(0deg); 
+            transform: translateX(0) translateY(0) rotateZ(0deg); 
             opacity: 1;
-            filter: brightness(1);
           }
         }
         
-        @keyframes rocketFlame {
+        @keyframes flameGlow {
           0%, 100% { 
-            height: 12px; 
-            opacity: 0.8;
-            boxShadow: 0 0 10px #ff5eb8;
+            height: 16px; 
+            opacity: 0.9;
+            boxShadow: 0 0 20px #ff6600, 0 0 40px rgba(255,102,0,0.7);
+            filter: drop-shadow(0 0 8px #ff9933);
           }
           50% { 
-            height: 16px; 
+            height: 20px; 
             opacity: 1;
-            boxShadow: 0 0 20px #ff5eb8, 0 0 10px #ff7a6b;
+            boxShadow: 0 0 30px #ff6600, 0 0 60px rgba(255,102,0,1), 0 0 10px #ff9933;
+            filter: drop-shadow(0 0 15px #ff6600);
           }
         }
         
