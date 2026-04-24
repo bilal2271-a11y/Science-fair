@@ -412,7 +412,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
       <div className="max-w-[1600px] mx-auto">
         {/* Header with BISK Logo and Biskonaut */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
-          <div className="flex items-end gap-3 sm:gap-6 md:gap-8 flex-wrap">
+          <div className="flex items-end gap-3 sm:gap-6 md:gap-8 flex-wrap flex-1">
             {/* BISK Logo - Responsive */}
             <div className="relative flex-shrink-0">
               <div className="w-20 sm:w-28 md:w-[140px] h-20 sm:h-28 md:h-[140px] rounded-2xl sm:rounded-3xl p-2 sm:p-4 flex items-center justify-center"
@@ -429,21 +429,6 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                 />
               </div>
               <OrbitingElectrons className="hidden sm:block w-32 sm:w-48 md:w-[220px] h-32 sm:h-48 md:h-[220px] -top-8 sm:-top-10 -left-8 sm:-left-10" />
-            </div>
-
-            {/* Biskonaut Astronaut Icon */}
-            <div className="hidden sm:flex flex-shrink-0 w-24 sm:w-32 md:w-40 h-24 sm:h-32 md:h-40 rounded-2xl sm:rounded-3xl p-2 sm:p-3 md:p-4 flex items-center justify-center overflow-hidden"
-              style={{
-                background: 'linear-gradient(135deg, rgba(94,234,255,0.15), rgba(200,255,46,0.1))',
-                border: '2px solid rgba(94,234,255,0.3)',
-                boxShadow: '0 0 40px rgba(94,234,255,0.2), inset 0 0 20px rgba(94,234,255,0.1)'
-              }}>
-              <img 
-                src="/biskonaut.png"
-                alt="Biskonaut Astronaut"
-                className="w-full h-full object-cover"
-                style={{ animation: 'float 3s ease-in-out infinite', filter: 'drop-shadow(0 0 20px rgba(94,234,255,0.4))' }}
-              />
             </div>
             
             <div className="flex-1">
@@ -489,6 +474,43 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
               </h1>
             </div>
           </div>
+
+          {/* Biskonaut Astronaut Icon - Right Side */}
+          <div className="hidden sm:flex flex-shrink-0 relative w-28 sm:w-32 md:w-40 lg:w-48 h-28 sm:h-32 md:h-40 lg:h-48 items-center justify-center"
+            style={{
+              perspective: '1000px'
+            }}>
+            {/* Outer glow container */}
+            <div className="absolute inset-0 rounded-2xl md:rounded-3xl p-2 sm:p-3 md:p-4"
+              style={{
+                background: 'linear-gradient(135deg, rgba(94,234,255,0.2), rgba(200,255,46,0.15))',
+                border: '2px solid rgba(94,234,255,0.4)',
+                boxShadow: '0 0 50px rgba(94,234,255,0.4), inset 0 0 30px rgba(94,234,255,0.1), 0 0 100px rgba(94,234,255,0.2)',
+                backdropFilter: 'blur(10px)'
+              }}>
+            </div>
+            
+            {/* Biskonaut Image */}
+            <img 
+              src="/biskonaut-transparent.png"
+              alt="Biskonaut Astronaut"
+              className="relative w-24 sm:w-28 md:w-36 lg:w-44 h-auto z-10"
+              style={{ 
+                animation: 'biskonaut-float 4s ease-in-out infinite',
+                filter: 'drop-shadow(0 0 30px rgba(94,234,255,0.5)) drop-shadow(0 0 60px rgba(200,255,46,0.2))',
+                transition: 'transform 0.3s ease'
+              }}
+            />
+            
+            {/* Decorative orbiting dots */}
+            <div className="absolute inset-0 rounded-2xl md:rounded-3xl" 
+              style={{
+                background: 'conic-gradient(from 0deg, rgba(94,234,255,0.3), transparent)',
+                animation: 'spin 8s linear infinite'
+              }}>
+            </div>
+          </div>
+        </div>
           <div className="hidden lg:flex flex-col items-end gap-2 flex-shrink-0">
             <StatPill label="Projects" value={projects.length} />
             <StatPill label="Votes" value={votes.length} highlight />
@@ -1645,6 +1667,16 @@ export default function App() {
         @keyframes float {
           0%, 100% { transform: translateY(0px) scale(1); }
           50% { transform: translateY(-12px) scale(1.02); }
+        }
+        
+        @keyframes biskonaut-float {
+          0%, 100% { transform: translateY(0px) rotateZ(-5deg) scale(1); }
+          50% { transform: translateY(-15px) rotateZ(5deg) scale(1.05); }
+        }
+        
+        @keyframes spin {
+          from { transform: rotateZ(0deg); }
+          to { transform: rotateZ(360deg); }
         }
         
         @keyframes rocketMotion0 {
