@@ -386,7 +386,13 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                 </span>
               </div>
               <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
-                <span className="block text-5xl md:text-7xl">B<span style={{ color: '#c8ff2e' }}>15</span>SK Science</span>
+                <span className="block text-5xl md:text-7xl">
+                  <span style={{ display: 'inline-block', animation: 'rocketMotion0 5s ease-in-out infinite' }}>B</span>
+                  <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion1 5s ease-in-out infinite' }}>1</span>
+                  <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion2 5s ease-in-out infinite' }}>5</span>
+                  <span style={{ display: 'inline-block', animation: 'rocketMotion3 5s ease-in-out infinite' }}>SK</span>
+                  {' '}Science
+                </span>
                 <span className="block text-5xl md:text-7xl italic" style={{ color: '#c8ff2e' }}>Fair</span>
               </h1>
             </div>
@@ -1444,6 +1450,58 @@ export default function App() {
         @keyframes logoFloat {
           0%, 100% { transform: translateY(0px); }
           50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes rocketMotion0 {
+          0% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+          10% { transform: translateY(-2px) rotateZ(-1deg) scaleY(1.05); }
+          20% { transform: translateY(-4px) rotateZ(2deg) scaleY(0.98); }
+          30% { transform: translateY(-8px) rotateZ(-1deg) scaleY(1.02); }
+          40% { transform: translateY(-25px) rotateZ(3deg) scaleY(0.95); }
+          50% { transform: translateY(-35px) rotateZ(-2deg) scaleY(1); }
+          60% { transform: translateY(-28px) rotateZ(1deg) scaleY(1.02); }
+          70% { transform: translateY(-15px) rotateZ(-1deg) scaleY(0.98); }
+          80% { transform: translateY(-5px) rotateZ(1deg) scaleY(1.01); }
+          100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+        }
+        
+        @keyframes rocketMotion1 {
+          0% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+          12% { transform: translateY(-3px) rotateZ(1deg) scaleY(1.06); }
+          22% { transform: translateY(-5px) rotateZ(-2deg) scaleY(0.97); }
+          32% { transform: translateY(-10px) rotateZ(2deg) scaleY(1.03); }
+          42% { transform: translateY(-28px) rotateZ(-3deg) scaleY(0.94); }
+          52% { transform: translateY(-38px) rotateZ(2deg) scaleY(1); }
+          62% { transform: translateY(-30px) rotateZ(-1deg) scaleY(1.01); }
+          72% { transform: translateY(-16px) rotateZ(1deg) scaleY(0.99); }
+          82% { transform: translateY(-6px) rotateZ(-1deg) scaleY(1.02); }
+          100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+        }
+        
+        @keyframes rocketMotion2 {
+          0% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+          14% { transform: translateY(-3px) rotateZ(-2deg) scaleY(1.05); }
+          24% { transform: translateY(-6px) rotateZ(1deg) scaleY(0.98); }
+          34% { transform: translateY(-12px) rotateZ(-2deg) scaleY(1.04); }
+          44% { transform: translateY(-30px) rotateZ(2deg) scaleY(0.96); }
+          54% { transform: translateY(-40px) rotateZ(-1deg) scaleY(1); }
+          64% { transform: translateY(-32px) rotateZ(2deg) scaleY(1.01); }
+          74% { transform: translateY(-17px) rotateZ(-1deg) scaleY(0.99); }
+          84% { transform: translateY(-7px) rotateZ(1deg) scaleY(1.02); }
+          100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+        }
+        
+        @keyframes rocketMotion3 {
+          0% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
+          16% { transform: translateY(-2px) rotateZ(2deg) scaleY(1.04); }
+          26% { transform: translateY(-5px) rotateZ(-1deg) scaleY(0.99); }
+          36% { transform: translateY(-14px) rotateZ(2deg) scaleY(1.03); }
+          46% { transform: translateY(-32px) rotateZ(-3deg) scaleY(0.95); }
+          56% { transform: translateY(-42px) rotateZ(1deg) scaleY(1); }
+          66% { transform: translateY(-34px) rotateZ(-2deg) scaleY(1.02); }
+          76% { transform: translateY(-18px) rotateZ(1deg) scaleY(0.98); }
+          86% { transform: translateY(-8px) rotateZ(-1deg) scaleY(1.01); }
+          100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
         }
         
         @keyframes pulse {
