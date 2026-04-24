@@ -474,48 +474,11 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
               </h1>
             </div>
           </div>
-
-          {/* Biskonaut Astronaut Icon - Right Side */}
-          <div className="hidden sm:flex flex-shrink-0 relative w-28 sm:w-32 md:w-40 lg:w-48 h-28 sm:h-32 md:h-40 lg:h-48 items-center justify-center"
-            style={{
-              perspective: '1000px'
-            }}>
-            {/* Outer glow container */}
-            <div className="absolute inset-0 rounded-2xl md:rounded-3xl p-2 sm:p-3 md:p-4"
-              style={{
-                background: 'linear-gradient(135deg, rgba(94,234,255,0.2), rgba(200,255,46,0.15))',
-                border: '2px solid rgba(94,234,255,0.4)',
-                boxShadow: '0 0 50px rgba(94,234,255,0.4), inset 0 0 30px rgba(94,234,255,0.1), 0 0 100px rgba(94,234,255,0.2)',
-                backdropFilter: 'blur(10px)'
-              }}>
-            </div>
-            
-            {/* Biskonaut Image */}
-            <img 
-              src="/biskonaut-transparent.png"
-              alt="Biskonaut Astronaut"
-              className="relative w-24 sm:w-28 md:w-36 lg:w-44 h-auto z-10"
-              style={{ 
-                animation: 'biskonaut-float 4s ease-in-out infinite',
-                filter: 'drop-shadow(0 0 30px rgba(94,234,255,0.5)) drop-shadow(0 0 60px rgba(200,255,46,0.2))',
-                transition: 'transform 0.3s ease'
-              }}
-            />
-            
-            {/* Decorative orbiting dots */}
-            <div className="absolute inset-0 rounded-2xl md:rounded-3xl" 
-              style={{
-                background: 'conic-gradient(from 0deg, rgba(94,234,255,0.3), transparent)',
-                animation: 'spin 8s linear infinite'
-              }}>
-            </div>
-          </div>
         </div>
-          <div className="hidden lg:flex flex-col items-end gap-2 flex-shrink-0">
-            <StatPill label="Projects" value={projects.length} />
-            <StatPill label="Votes" value={votes.length} highlight />
-            <StatPill label="Leader" value={sortedProjects[0]?.title.slice(0, 18) || '—'} mono={false} />
-          </div>
+        <div className="hidden lg:flex flex-col items-end gap-2 flex-shrink-0">
+          <StatPill label="Projects" value={projects.length} />
+          <StatPill label="Votes" value={votes.length} highlight />
+          <StatPill label="Leader" value={sortedProjects[0]?.title.slice(0, 18) || '—'} mono={false} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_380px] gap-4 sm:gap-6 md:gap-8">
@@ -1667,16 +1630,6 @@ export default function App() {
         @keyframes float {
           0%, 100% { transform: translateY(0px) scale(1); }
           50% { transform: translateY(-12px) scale(1.02); }
-        }
-        
-        @keyframes biskonaut-float {
-          0%, 100% { transform: translateY(0px) rotateZ(-5deg) scale(1); }
-          50% { transform: translateY(-15px) rotateZ(5deg) scale(1.05); }
-        }
-        
-        @keyframes spin {
-          from { transform: rotateZ(0deg); }
-          to { transform: rotateZ(360deg); }
         }
         
         @keyframes rocketMotion0 {
