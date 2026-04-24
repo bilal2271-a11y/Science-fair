@@ -410,7 +410,7 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
         </div>
       )}
       <div className="max-w-[1600px] mx-auto">
-        {/* Header with BISK Logo and Biskonaut */}
+        {/* Header with BISK Logo */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
           <div className="flex items-end gap-3 sm:gap-6 md:gap-8 flex-wrap flex-1">
             {/* BISK Logo - Responsive */}
