@@ -747,10 +747,10 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
 
   if (projects.length === 0) {
     return (
-      <div className="min-h-screen pt-24 flex items-center justify-center px-6">
+      <div className="min-h-screen pt-20 sm:pt-24 flex items-center justify-center px-3 sm:px-6">
         <div className="text-center">
-          <Beaker size={48} className="text-white/30 mx-auto mb-4" />
-          <p style={{ fontFamily: 'Fraunces, serif' }} className="text-white/60 text-2xl">No projects to vote on yet.</p>
+          <Beaker size={40} className="sm:size-48 text-white/30 mx-auto mb-3 sm:mb-4" />
+          <p style={{ fontFamily: 'Fraunces, serif' }} className="text-sm sm:text-xl md:text-2xl text-white/60">No projects to vote on yet.</p>
         </div>
       </div>
     );
@@ -760,35 +760,35 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
     const votedProject = projects.find(p => p.id === myVote?.projectId);
     const c = votedProject ? colorOf(votedProject.color) : ACCENT_COLORS[0];
     return (
-      <div className="min-h-screen pt-24 pb-12 px-6">
+      <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6">
         <div className="max-w-2xl mx-auto">
-          <div className="rounded-3xl p-10 text-center relative overflow-hidden"
+          <div className="rounded-2xl sm:rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden"
             style={{ background: c.soft, border: `1px solid ${c.hex}44` }}>
             <div className="absolute inset-0 opacity-30 blur-3xl"
               style={{ background: `radial-gradient(circle at 50% 30%, ${c.hex}, transparent 70%)` }} />
             <div className="relative">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-6"
+              <div className="inline-flex items-center justify-center w-12 sm:w-16 h-12 sm:h-16 rounded-full mb-4 sm:mb-6"
                 style={{ background: c.hex }}>
-                <Check size={32} className="text-black" strokeWidth={3} />
+                <Check size={24} className="sm:size-32 text-black" strokeWidth={3} />
               </div>
-              <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] mb-3" style={{ color: c.hex }}>
+              <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-2 sm:mb-3" style={{ color: c.hex }}>
                 Vote recorded
               </div>
-              <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300 }} className="text-4xl md:text-5xl text-white mb-4 leading-tight">
+              <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300 }} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-3 sm:mb-4 leading-tight">
                 Thank you for voting for
               </h1>
-              <div className="text-6xl mb-4">{votedProject?.emoji}</div>
-              <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, color: c.hex }} className="text-3xl mb-1">
+              <div className="text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4">{votedProject?.emoji}</div>
+              <h2 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, color: c.hex }} className="text-xl sm:text-2xl md:text-3xl mb-1">
                 {votedProject?.title}
               </h2>
-              <p style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-sm text-white/50">
+              <p style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs sm:text-sm text-white/50">
                 by {votedProject?.student} · Grade {votedProject?.grade}
               </p>
-              <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-white/50 mt-8 mb-6 max-w-md mx-auto">
+              <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/50 mt-6 sm:mt-8 mb-4 sm:mb-6 max-w-md mx-auto">
                 Your vote has been locked in. One vote per attendee — you're done. Check the Display to see live standings.
               </p>
               <button onClick={resetMyVote}
-                className="text-xs text-white/30 hover:text-white/60 underline transition"
+                className="text-[10px] sm:text-xs text-white/30 hover:text-white/60 underline transition"
                 style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                 [demo] reset my vote
               </button>
@@ -800,21 +800,21 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-20 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs uppercase tracking-[0.3em] text-[#c8ff2e] mb-2">
+        <div className="mb-6 sm:mb-8">
+          <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[#c8ff2e] mb-2">
             ◆ Cast your vote
           </div>
-          <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-5xl md:text-6xl text-white leading-none">
+          <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.03em' }} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white leading-none">
             Pick <span className="italic" style={{ color: '#c8ff2e' }}>one</span> favorite.
           </h1>
-          <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-white/50 mt-3 max-w-xl">
+          <p style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/50 mt-2 sm:mt-3 max-w-xl">
             You get a single vote. Choose the project that impressed you most. Tap a card below to vote.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {projects.map((p) => {
             const c = colorOf(p.color);
             const count = voteCount[p.id] || 0;
@@ -822,7 +822,7 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
               <button
                 key={p.id}
                 onClick={() => setPending(p)}
-                className="group relative rounded-2xl p-6 text-left transition-all duration-300 hover:scale-[1.02] overflow-hidden"
+                className="group relative rounded-lg sm:rounded-2xl p-4 sm:p-6 text-left transition-all duration-300 hover:scale-[1.02] overflow-hidden"
                 style={{
                   background: 'rgba(255,255,255,0.03)',
                   border: '1px solid rgba(255,255,255,0.08)',
@@ -836,30 +836,30 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
                   e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
                 }}
               >
-                <div className="absolute top-0 right-0 w-32 h-32 opacity-20 blur-2xl transition-opacity group-hover:opacity-40"
+                <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 opacity-20 blur-2xl transition-opacity group-hover:opacity-40"
                   style={{ background: `radial-gradient(circle, ${c.hex}, transparent)` }} />
                 <div className="relative">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="text-5xl">{p.emoji}</div>
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className="text-3xl sm:text-4xl md:text-5xl">{p.emoji}</div>
                     <div className="text-right">
-                      <div style={{ fontFamily: 'JetBrains Mono, monospace', color: c.hex }} className="text-xs tracking-widest uppercase">
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', color: c.hex }} className="text-[10px] sm:text-xs tracking-widest uppercase">
                         {count} {count === 1 ? 'vote' : 'votes'}
                       </div>
                     </div>
                   </div>
-                  <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, letterSpacing: '-0.01em' }} className="text-2xl text-white mb-2 leading-tight">
+                  <h3 style={{ fontFamily: 'Fraunces, serif', fontWeight: 500, letterSpacing: '-0.01em' }} className="text-base sm:text-lg md:text-2xl text-white mb-1 sm:mb-2 leading-tight">
                     {p.title}
                   </h3>
-                  <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-xs text-white/50 flex items-center gap-2">
-                    <span>{p.student}</span>
-                    <span className="w-1 h-1 rounded-full bg-white/30" />
-                    <span>Grade {p.grade}</span>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace' }} className="text-[10px] sm:text-xs text-white/50 flex items-center gap-2">
+                    <span className="truncate">{p.student}</span>
+                    <span className="w-1 h-1 rounded-full bg-white/30 flex-shrink-0" />
+                    <span className="flex-shrink-0">Grade {p.grade}</span>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                    <span style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-sm text-white/60 group-hover:text-white transition">
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/5 flex items-center justify-between">
+                    <span style={{ fontFamily: 'Inter Tight, sans-serif' }} className="text-xs sm:text-sm text-white/60 group-hover:text-white transition">
                       Tap to vote
                     </span>
-                    <ChevronRight size={16} className="text-white/30 group-hover:text-white transition group-hover:translate-x-1" />
+                    <ChevronRight size={14} className="sm:size-16 text-white/30 group-hover:text-white transition group-hover:translate-x-1" />
                   </div>
                 </div>
               </button>
@@ -870,8 +870,8 @@ function VoteView({ projects, voteCount, hasVoted, myVote, castVote, resetMyVote
 
       {/* Confirm modal */}
       {pending && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm" onClick={() => setPending(null)}>
-          <div className="relative rounded-2xl p-8 max-w-md w-full" style={{ background: '#0f0f1a', border: `1px solid ${colorOf(pending.color).hex}66` }}
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-sm" onClick={() => setPending(null)}>
+          <div className="relative rounded-xl sm:rounded-2xl p-6 sm:p-8 max-w-md w-full" style={{ background: '#0f0f1a', border: `1px solid ${colorOf(pending.color).hex}66` }}
             onClick={(e) => e.stopPropagation()}>
             <button onClick={() => setPending(null)} className="absolute top-4 right-4 text-white/40 hover:text-white">
               <X size={18} />
