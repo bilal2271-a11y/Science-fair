@@ -385,14 +385,14 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                   ◆ Live Standings
                 </span>
               </div>
-              <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9]">
+              <h1 style={{ fontFamily: 'Fraunces, serif', fontWeight: 300, letterSpacing: '-0.04em' }} className="text-white leading-[0.9] relative">
                 <span className="block text-5xl md:text-7xl relative">
-                  <span style={{ display: 'inline-block', animation: 'rocketMotion0 5s ease-in-out infinite' }}>B</span>
+                  B
                   <span 
                     style={{ 
                       color: '#c8ff2e', 
                       display: 'inline-block', 
-                      animation: 'rocketShoot 5s ease-in infinite',
+                      animation: 'rocketShootSlow 8s ease-in infinite',
                       position: 'relative',
                       textShadow: '0 0 20px #c8ff2e'
                     }}
@@ -413,10 +413,128 @@ function DisplayView({ projects, votes, voteCount, sortedProjects, recentVotes, 
                       }}
                     />
                   </span>
-                  <span style={{ color: '#c8ff2e', display: 'inline-block', animation: 'rocketMotion2 5s ease-in-out infinite' }}>5</span>
-                  <span style={{ display: 'inline-block', animation: 'rocketMotion3 5s ease-in-out infinite' }}>K</span>
-                  {' '}Fair Science
+                  5K{' '}Fair Science
                 </span>
+                
+                {/* Biskonaut 3D Mascot */}
+                <div style={{
+                  position: 'absolute',
+                  top: '-80px',
+                  left: '60px',
+                  width: '120px',
+                  height: '140px',
+                  perspective: '1000px',
+                  animation: 'bikonaut3D 4s ease-in-out infinite'
+                }}>
+                  {/* Astronaut Body */}
+                  <div style={{
+                    position: 'relative',
+                    width: '100%',
+                    height: '100%',
+                    transformStyle: 'preserve-3d',
+                    animation: 'float 3s ease-in-out infinite'
+                  }}>
+                    {/* Head - Helmet */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '10px',
+                      left: '35px',
+                      width: '50px',
+                      height: '50px',
+                      background: 'radial-gradient(circle at 30% 30%, rgba(94,234,255,0.8), rgba(94,234,255,0.2))',
+                      border: '2px solid #5eeaff',
+                      borderRadius: '50%',
+                      boxShadow: '0 0 30px rgba(94,234,255,0.6), inset 0 0 15px rgba(94,234,255,0.3)',
+                      animation: 'helmetGlow 2s ease-in-out infinite'
+                    }}>
+                      {/* Visor */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '18px',
+                        left: '12px',
+                        width: '26px',
+                        height: '16px',
+                        background: 'linear-gradient(135deg, #1a1a2e, #0f3460)',
+                        borderRadius: '50%',
+                        border: '1px solid #5eeaff',
+                        boxShadow: 'inset 0 0 10px rgba(94,234,255,0.5)'
+                      }} />
+                    </div>
+                    
+                    {/* Body - Suit */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '60px',
+                      left: '30px',
+                      width: '60px',
+                      height: '55px',
+                      background: 'linear-gradient(135deg, rgba(200,255,46,0.3), rgba(94,234,255,0.2))',
+                      border: '2px solid rgba(200,255,46,0.6)',
+                      borderRadius: '8px',
+                      boxShadow: '0 0 20px rgba(200,255,46,0.3)'
+                    }}>
+                      {/* Chest Panel */}
+                      <div style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: '20px',
+                        height: '20px',
+                        background: 'radial-gradient(circle, #c8ff2e, rgba(200,255,46,0.3))',
+                        border: '1px solid #c8ff2e',
+                        borderRadius: '50%',
+                        boxShadow: '0 0 15px #c8ff2e'
+                      }} />
+                    </div>
+                    
+                    {/* Arms */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '70px',
+                      left: '5px',
+                      width: '15px',
+                      height: '35px',
+                      background: 'rgba(94,234,255,0.3)',
+                      border: '1px solid #5eeaff',
+                      borderRadius: '8px',
+                      animation: 'armWave 2s ease-in-out infinite'
+                    }} />
+                    <div style={{
+                      position: 'absolute',
+                      top: '70px',
+                      right: '5px',
+                      width: '15px',
+                      height: '35px',
+                      background: 'rgba(94,234,255,0.3)',
+                      border: '1px solid #5eeaff',
+                      borderRadius: '8px',
+                      animation: 'armWave 2s ease-in-out infinite 0.5s'
+                    }} />
+                    
+                    {/* Legs */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '0px',
+                      left: '20px',
+                      width: '12px',
+                      height: '25px',
+                      background: 'rgba(200,255,46,0.4)',
+                      border: '1px solid rgba(200,255,46,0.6)',
+                      borderRadius: '4px'
+                    }} />
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '0px',
+                      right: '20px',
+                      width: '12px',
+                      height: '25px',
+                      background: 'rgba(200,255,46,0.4)',
+                      border: '1px solid rgba(200,255,46,0.6)',
+                      borderRadius: '4px'
+                    }} />
+                  </div>
+                </div>
               </h1>
             </div>
           </div>
@@ -1555,7 +1673,7 @@ export default function App() {
           100% { transform: translateY(0) rotateZ(0deg) scaleY(1); }
         }
         
-        @keyframes rocketShoot {
+        @keyframes rocketShootSlow {
           0% { 
             transform: translateY(0) scaleY(1) rotateZ(0deg); 
             opacity: 1;
@@ -1566,22 +1684,22 @@ export default function App() {
             opacity: 1;
             filter: brightness(1.2);
           }
-          25% { 
+          20% { 
             transform: translateY(-40px) scaleY(0.9) rotateZ(1deg); 
             opacity: 1;
             filter: brightness(1.4);
           }
-          40% { 
+          35% { 
             transform: translateY(-120px) scaleY(0.8) rotateZ(-1deg); 
             opacity: 1;
             filter: brightness(1.3);
           }
-          60% { 
+          55% { 
             transform: translateY(-300px) scaleY(0.7) rotateZ(2deg); 
             opacity: 0.8;
             filter: brightness(1);
           }
-          85% { 
+          80% { 
             transform: translateY(-600px) scaleY(0.5) rotateZ(-3deg); 
             opacity: 0;
             filter: brightness(0.8);
@@ -1672,6 +1790,30 @@ export default function App() {
         @keyframes pulse {
           0%, 100% { box-shadow: 0 0 20px rgba(200,255,46,0.4); }
           50% { box-shadow: 0 0 40px rgba(200,255,46,0.8); }
+        }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px) rotateX(0deg); }
+          50% { transform: translateY(-10px) rotateX(5deg); }
+        }
+        
+        @keyframes bikonaut3D {
+          0%, 100% { transform: rotateY(0deg) rotateX(0deg); }
+          50% { transform: rotateY(15deg) rotateX(-5deg); }
+        }
+        
+        @keyframes helmetGlow {
+          0%, 100% { 
+            box-shadow: 0 0 30px rgba(94,234,255,0.6), inset 0 0 15px rgba(94,234,255,0.3);
+          }
+          50% { 
+            box-shadow: 0 0 50px rgba(94,234,255,0.9), inset 0 0 25px rgba(94,234,255,0.5);
+          }
+        }
+        
+        @keyframes armWave {
+          0%, 100% { transform: rotateZ(-20deg); }
+          50% { transform: rotateZ(30deg); }
         }
         
         @keyframes slideIn0 { 
